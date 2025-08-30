@@ -10,7 +10,12 @@ This directory contains scripts to manage the Worky database schema and migratio
 - `db-manager.sh` - Combined script with multiple options (migrate, cleanup, status)
 
 ### NPM Commands
-After setting up the DATABASE_URL environment variable, you can use these npm commands:
+The scripts will automatically load environment variables from the `.env` file if it exists. You can set either:
+
+1. `DATABASE_URL` - Direct database connection string
+2. `EXPO_PUBLIC_SUPABASE_URL` and `SUPABASE_DB_PASSWORD` - Supabase connection parameters
+
+If both are set, `DATABASE_URL` takes precedence.
 - `npm run db:migrate` - Run database migrations
 - `npm run db:cleanup` - Clean up database tables
 - `npm run db:status` - Check database status
@@ -18,10 +23,17 @@ After setting up the DATABASE_URL environment variable, you can use these npm co
 ## Prerequisites
 
 1. PostgreSQL client tools (psql) must be installed
-2. Set the DATABASE_URL environment variable:
-   ```bash
-   export DATABASE_URL="postgresql://user:password@host:port/database"
-   ```
+2. Either:
+   - Set the DATABASE_URL environment variable:
+     ```bash
+     export DATABASE_URL="postgresql://user:password@host:port/database"
+     ```
+   - Or set EXPO_PUBLIC_SUPABASE_URL in your .env file and SUPABASE_DB_PASSWORD:
+     ```bash
+     # In your .env file
+     EXPO_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+     SUPABASE_DB_PASSWORD=your-db-password
+     ```
 
 ## Usage
 

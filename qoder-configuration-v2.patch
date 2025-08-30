@@ -1,0 +1,554 @@
+From 7593ccfe32dcef63b867f0097951daef10ad70a1 Mon Sep 17 00:00:00 2001
+From: Atemndobs <atemndobs@yahoo.com>
+Date: Sat, 30 Aug 2025 12:43:28 +0200
+Subject: [PATCH 1/2] Add Qoder configuration files for AI-assisted development
+
+---
+ .qoder/README.md           | 34 +++++++++++++
+ .qoder/rules/database.md   | 46 ++++++++++++++++++
+ .qoder/rules/structure.md  | 50 +++++++++++++++++++
+ .qoder/rules/testing.md    | 60 +++++++++++++++++++++++
+ .qoder/rules/typescript.md | 98 ++++++++++++++++++++++++++++++++++++++
+ .qoder/rules/workflow.md   | 66 +++++++++++++++++++++++++
+ .qoder/rules/worky.md      | 65 +++++++++++++++++++++++++
+ 7 files changed, 419 insertions(+)
+ create mode 100644 .qoder/README.md
+ create mode 100644 .qoder/rules/database.md
+ create mode 100644 .qoder/rules/structure.md
+ create mode 100644 .qoder/rules/testing.md
+ create mode 100644 .qoder/rules/typescript.md
+ create mode 100644 .qoder/rules/workflow.md
+ create mode 100644 .qoder/rules/worky.md
+
+diff --git a/.qoder/README.md b/.qoder/README.md
+new file mode 100644
+index 0000000..ca73862
+--- /dev/null
++++ b/.qoder/README.md
+@@ -0,0 +1,34 @@
++# Worky - Qoder Configuration
++
++This project is configured for use with [Qoder](https://qoder.com/), an agentic coding platform designed for real software development.
++
++## Qoder Rules
++
++The project includes several Qoder rules in the [.qoder/rules](file:///Users/atem/sites/jnabusiness_solutions/worky/.qoder/rules) directory that guide the AI assistant's behavior:
++
++1. **[worky.md](file:///Users/atem/sites/jnabusiness_solutions/worky/.qoder/rules/worky.md)** - Always applied rules for the Worky project
++2. **[database.md](file:///Users/atem/sites/jnabusiness_solutions/worky/.qoder/rules/database.md)** - Database schema and RLS policies guidance
++3. **[testing.md](file:///Users/atem/sites/jnabusiness_solutions/worky/.qoder/rules/testing.md)** - Testing guidelines and examples
++4. **[structure.md](file:///Users/atem/sites/jnabusiness_solutions/worky/.qoder/rules/structure.md)** - File structure and navigation guidance
++5. **[workflow.md](file:///Users/atem/sites/jnabusiness_solutions/worky/.qoder/rules/workflow.md)** - Development workflow and commands
++6. **[typescript.md](file:///Users/atem/sites/jnabusiness_solutions/worky/.qoder/rules/typescript.md)** - TypeScript and coding standards
++
++## Using Qoder with Worky
++
++1. Open this project in Qoder IDE
++2. The rules will automatically guide the AI assistant's behavior
++3. For specific guidance, you can manually apply rules using the `@rule` syntax in chat
++
++## Key Features
++
++- **Always Apply Rules**: Core project guidelines are always active
++- **Model Decision Rules**: Applied automatically when relevant (database, testing, structure, TypeScript)
++- **Manual Rules**: Development workflow commands available on demand
++
++## Getting Started
++
++1. Install dependencies: `npm install`
++2. Set up Supabase as described in README.md
++3. Start development: `npm start`
++
++The Qoder configuration ensures that the AI assistant will follow project-specific guidelines for technology choices, code structure, security requirements, and development practices.
+\ No newline at end of file
+diff --git a/.qoder/rules/database.md b/.qoder/rules/database.md
+new file mode 100644
+index 0000000..fe8c13e
+--- /dev/null
++++ b/.qoder/rules/database.md
+@@ -0,0 +1,46 @@
++---
++trigger: always_on
++alwaysApply: true
++---
++
++# Database Schema and RLS Policies
++
++When making changes to the database schema or RLS policies, always follow these guidelines:
++
++1. Any new table must ship with SELECT/INSERT/UPDATE/DELETE policies
++2. Always propose SQL changes in `/database/*.sql` with migration notes
++3. Keep RLS enabled at all times
++4. Handle booking/auction concurrency with DB constraints or RPC to prevent double-bookings
++5. Time handling: store UTC in DB; convert to Europe/Zurich in UI
++6. Follow the existing schema patterns in `database/schema.sql`
++7. Update `/docs/SCHEMA.md` when making schema changes
++
++Example of proper RLS policy structure:
++```sql
++-- For a new table called "example"
++create table example (
++  id uuid default gen_random_uuid() primary key,
++  user_id uuid references auth.users(id) not null,
++  data text,
++  created_at timestamp with time zone default now()
++);
++
++-- RLS policies
++alter table example enable row level security;
++
++create policy "Users can view their own examples"
++  on example for select
++  using (user_id = auth.uid());
++
++create policy "Users can insert their own examples"
++  on example for insert
++  with check (user_id = auth.uid());
++
++create policy "Users can update their own examples"
++  on example for update
++  using (user_id = auth.uid());
++
++create policy "Users can delete their own examples"
++  on example for delete
++  using (user_id = auth.uid());
++```
+\ No newline at end of file
+diff --git a/.qoder/rules/structure.md b/.qoder/rules/structure.md
+new file mode 100644
+index 0000000..f459fb8
+--- /dev/null
++++ b/.qoder/rules/structure.md
+@@ -0,0 +1,50 @@
++---
++type: model_decision
++description: When working with file structure, routing, or navigation
++---
++
++# File Structure and Navigation
++
++## Project Structure
++```
++app/
++├── (auth)/              # Authentication flow
++│   ├── welcome.tsx      # Landing page with user type selection
++│   ├── login.tsx        # Sign in screen
++│   ├── register.tsx     # Sign up screen
++│   ├── region-selection.tsx    # Swiss region selection
++│   └── work-type-selection.tsx # Handyman work type setup
++├── (handyman)/          # Handyman-specific screens
++│   ├── dashboard.tsx    # Stats and overview
++│   ├── time-slots.tsx   # Create and manage time slots
++│   ├── bookings.tsx     # View and manage bookings
++│   └── profile.tsx      # Business profile management
++├── (customer)/          # Customer-specific screens
++│   ├── dashboard.tsx    # Browse available slots
++│   ├── bookings.tsx     # View booking history
++│   └── profile.tsx      # Personal profile
++├── (tabs)/              # Main app navigation
++└── index.tsx            # Root routing logic
++```
++
++## Routing Guidelines
++- Use expo-router for navigation
++- Keep file-based routing consistent
++- Don't rename existing routes without updating links/imports
++- Use minimal React Navigation primitives where needed
++
++## Component Structure
++- Reuse existing components in `components/` directory
++- Use `ThemedText` and `ThemedView` for consistent styling
++- Follow existing UI patterns in the codebase
++- Place new constants in `constants/` directory
++
++## Service Structure
++- Place service files in `lib/` directory
++- Use naming pattern `*-service.ts` (e.g., `auction-service.ts`)
++- Follow existing service patterns in the codebase
++
++## Context Structure
++- Use existing `contexts/AuthContext.tsx` for authentication state
++- Create new contexts only when necessary
++- Follow existing context patterns in the codebase
+\ No newline at end of file
+diff --git a/.qoder/rules/testing.md b/.qoder/rules/testing.md
+new file mode 100644
+index 0000000..635ba3b
+--- /dev/null
++++ b/.qoder/rules/testing.md
+@@ -0,0 +1,60 @@
++---
++type: model_decision
++description: When writing tests or running test commands
++---
++
++# Testing Guidelines
++
++## Test Structure
++- Add tests next to features under `__tests__/`
++- Prefer RTL (React Testing Library) for components
++- Use pure TypeScript tests for services
++- Follow examples in existing tests under `__tests__/`
++
++## Test Commands
++- Run tests with: `npm test`
++- Run tests with coverage: `npm test -- --coverage`
++
++## Unit Testing
++- Services should have unit tests (auction, notifications, payment stubs)
++- Test pure functions without side effects
++- Mock external dependencies appropriately
++
++## Component Testing
++- Test auth screens, slot form, booking button disabled/enabled states
++- Use RTL for realistic user interaction testing
++- Test both positive and negative scenarios
++
++## Integration Testing
++- Test "two users race to book" scenario to verify auction trigger
++- Test time remaining logic for auctions
++- Test real-time updates for slots and bookings
++
++## Test Examples
++
++Component test example:
++```typescript
++import React from 'react';
++import { render, screen } from '@testing-library/react-native';
++import { BookingButton } from '../components/BookingButton';
++
++describe('BookingButton', () => {
++  it('disables button when slot is booked', () => {
++    render(<BookingButton isBooked={true} onPress={jest.fn()} />);
++    const button = screen.getByRole('button');
++    expect(button).toBeDisabled();
++  });
++});
++```
++
++Service test example:
++```typescript
++import { auctionService } from '../lib/auction-service';
++
++describe('auctionService', () => {
++  it('calculates correct bid increment', () => {
++    const result = auctionService.calculateBidIncrement(100);
++    expect(result).toBe(110); // 10% increment
++  });
++});
++```
+\ No newline at end of file
+diff --git a/.qoder/rules/typescript.md b/.qoder/rules/typescript.md
+new file mode 100644
+index 0000000..36bcc51
+--- /dev/null
++++ b/.qoder/rules/typescript.md
+@@ -0,0 +1,98 @@
++---
++type: always_apply
++---
++
++# TypeScript and Coding Standards
++
++## Language Preferences
++- Use TypeScript for all new code
++- Enable strict mode in tsconfig.json
++- Use proper typing for all variables, parameters, and return values
++
++## Component Development
++- Use functional components with hooks
++- Use React Context for state management instead of Redux/MobX
++- Follow existing patterns in the codebase
++- Use ThemedText and ThemedView for consistent UI
++
++## Service Development
++- Create services in `lib/` directory with `*-service.ts` naming
++- Use async/await for asynchronous operations
++- Handle errors appropriately with try/catch
++- Follow existing service patterns
++
++## Styling
++- Use StyleSheet for styling
++- Use Themed components for consistent dark/light mode
++- Follow existing styling patterns in the codebase
++- Ensure accessibility (touch targets ≥44px, labels for inputs)
++
++## Performance
++- Memoize heavy lists with useMemo or React.memo
++- Avoid unnecessary re-renders
++- Keep bundle size lean
++- Use useCallback for event handlers passed to child components
++
++## Example Patterns
++
++Component example:
++```typescript
++import React from 'react';
++import { View, StyleSheet } from 'react-native';
++import { ThemedText, ThemedView } from '@/components/ThemedText';
++
++interface Props {
++  title: string;
++  onPress: () => void;
++}
++
++export const MyComponent: React.FC<Props> = ({ title, onPress }) => {
++  return (
++    <ThemedView style={styles.container}>
++      <ThemedText style={styles.title}>{title}</ThemedText>
++      <TouchableOpacity onPress={onPress}>
++        <ThemedText>Press me</ThemedText>
++      </TouchableOpacity>
++    </ThemedView>
++  );
++};
++
++const styles = StyleSheet.create({
++  container: {
++    padding: 16,
++  },
++  title: {
++    fontSize: 18,
++    fontWeight: 'bold',
++  },
++});
++```
++
++Service example:
++```typescript
++import { supabase } from '@/lib/supabase';
++
++interface Slot {
++  id: string;
++  handyman_id: string;
++  start_time: string;
++  end_time: string;
++}
++
++export const slotService = {
++  async getAvailableSlots(): Promise<Slot[]> {
++    try {
++      const { data, error } = await supabase
++        .from('time_slots')
++        .select('*')
++        .eq('status', 'open');
++      
++      if (error) throw error;
++      return data || [];
++    } catch (error) {
++      console.error('Error fetching slots:', error);
++      throw error;
++    }
++  },
++};
++```
+\ No newline at end of file
+diff --git a/.qoder/rules/workflow.md b/.qoder/rules/workflow.md
+new file mode 100644
+index 0000000..e586174
+--- /dev/null
++++ b/.qoder/rules/workflow.md
+@@ -0,0 +1,66 @@
++---
++type: apply_manually
++---
++
++# Development Workflow and Commands
++
++## Available Scripts
++
++Start development server:
++```
++npm start
++```
++
++Run on specific platforms:
++```
++npm run ios          # iOS simulator
++npm run android      # Android emulator
++npm run web          # Web browser
++```
++
++Code quality:
++```
++npm run lint         # ESLint checking
++npx expo doctor      # Project health check
++```
++
++Dependencies:
++```
++npx expo install --check  # Update to compatible versions
++```
++
++Testing:
++```
++npm test             # Run test suite
++npm test -- --coverage   # Run tests with coverage
++```
++
++Project commands:
++```
++npx expo start --clear   # Clear cache and restart
++npm run reset-project    # Reset project (removes example code)
++npx expo install --fix   # Check for updates
++```
++
++## Development Process
++
++1. Always read the relevant documentation before starting:
++   - `/README.md`
++   - `/IMPLEMENTATION_SUMMARY.md`
++   - `/docs/*`
++   - `/database/schema.sql`
++
++2. When making changes:
++   - Provide complete files with paths
++   - Use minimal diffs when editing
++   - Follow existing code patterns
++
++3. For SQL changes:
++   - Put migration in `/database/0NN_description.sql`
++   - Update `/docs/SCHEMA.md` if schema changes
++
++4. For new features:
++   - Add tests in `__tests__/`
++   - Follow TypeScript strict mode
++   - Use ESLint configuration
++   - Update documentation as needed
+\ No newline at end of file
+diff --git a/.qoder/rules/worky.md b/.qoder/rules/worky.md
+new file mode 100644
+index 0000000..9283acb
+--- /dev/null
++++ b/.qoder/rules/worky.md
+@@ -0,0 +1,65 @@
++---
++type: always_apply
++---
++
++# Worky - Qoder Rules
++
++## Identity & Voice
++You are the Tech Lead for **Worky** (Swiss handyman booking). Be concise, pragmatic, and implementation-first.
++
++## Technology Stack
++Prefer **TypeScript**, **React Native 0.79.6 + Expo SDK 53**, **expo-router**, **Supabase** (Auth/RLS/Realtime).
++
++## Locale & Currency
++Default locale/timezone: **Switzerland / Europe/Zurich**; currency **CHF**.
++
++## Code Boundaries (DO / DON'T)
++
++### Do's
++- Keep file-based routing under `app/` consistent
++- Reuse constants in `constants/SwissRegions.ts` and `constants/WorkTypes.ts`
++- Keep RLS **enabled** and propose SQL changes in `/database/*.sql` with migration notes
++- Use **React Context + hooks** for state management
++- Use **Themed components + StyleSheet** for styling
++- Use **Supabase** via `lib/supabase.ts` for backend
++- Use Realtime channels for slots/auctions/notifications
++
++### Don'ts
++- Do not remove or break existing files unless a refactor plan is documented in `/docs/ARCHITECTURE.md`
++- Do not rename existing routes without updating links/imports
++- Do not introduce server secrets to the client. Only use `EXPO_PUBLIC_*` envs
++- Do not add Redux/MobX or other third-party state libraries
++- Do not bypass RLS with service keys. All flows must work with anon client and policies
++
++## Project Structure
++Respect current tree: `app/(auth|customer|handyman|tabs)`, `lib/*-service.ts`, `contexts/AuthContext.tsx`, `database/schema.sql`, tests in `__tests__/`. Populate screens instead of creating parallel folders.
++
++## Security & Data Handling
++- RLS first. Any new table must ship with **SELECT/INSERT/UPDATE/DELETE** policies and unit tests (where feasible)
++- Time handling: store **UTC** in DB; convert to **Europe/Zurich** in UI. Avoid device local drift
++- Booking/auction concurrency: handle with DB constraints or RPC; prevent double-bookings
++
++## Features & Phases
++- Phase 1 (MVP): auth, role routing, time-slot CRUD, customer browse+book, realtime dashboards, notifications (basic)
++- Phase 2: auctions on slot contention (countdown, bids, winner); realtime updates
++- Phase 3: payments (**Stripe Connect**); receipts/refunds
++
++## Developer Experience
++- All commands must run via `npm` scripts already defined. Provide copy-paste steps
++- Add tests next to features under `__tests__/*`; prefer RTL for components and pure TS tests for services
++- Keep console warnings minimal; preserve current warning filters in `metro.config.js`
++
++## What to Read Before Acting
++Read `/README.md`, `/docs/*`, `/database/schema.sql`, `/database/fix-rls-policies.sql`, `IMPLEMENTATION_SUMMARY.md` before proposing large changes.
++When ambiguous, draft a **short plan** in `/docs/ARCHITECTURE.md` section "Proposals" and then implement.
++
++## Output Formatting
++- Provide **complete files** with paths (e.g., `app/(handyman)/slots.tsx`) and minimal diffs when editing
++- For SQL: put migration in `/database/0NN_description.sql` and update `/docs/SCHEMA.md` if schema changes
++
++## Non-functional Requirements
++- Accessibility: touch targets ≥44px; labels for inputs; dark/light themes supported
++- Performance: memoize heavy lists; avoid unnecessary re-renders; keep bundle lean
++
++## Guardrails
++- Never introduce unscoped third-party state libraries, ORM, or server runtimes
+\ No newline at end of file
+-- 
+2.47.1
+
+
+From 7da01acf0ec6ac7462bec31b734ed91b941cd557 Mon Sep 17 00:00:00 2001
+From: Atemndobs <atemndobs@yahoo.com>
+Date: Sat, 30 Aug 2025 12:46:22 +0200
+Subject: [PATCH 2/2] Add summary documentation for Qoder configuration patch
+
+---
+ QODER_CONFIGURATION.md | 40 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
+ create mode 100644 QODER_CONFIGURATION.md
+
+diff --git a/QODER_CONFIGURATION.md b/QODER_CONFIGURATION.md
+new file mode 100644
+index 0000000..f7278e8
+--- /dev/null
++++ b/QODER_CONFIGURATION.md
+@@ -0,0 +1,40 @@
++# Qoder Configuration for Worky Project
++
++## Summary
++
++This patch adds Qoder configuration files to the Worky project, enabling AI-assisted development with the Qoder IDE. The configuration includes rules that guide the AI assistant's behavior according to the project's technology choices, architecture, and development practices.
++
++## Changes Included
++
++1. Created `.qoder/rules/` directory with the following rule files:
++   - `worky.md` - Always applied rules for the Worky project
++   - `database.md` - Database schema and RLS policies guidance
++   - `testing.md` - Testing guidelines and examples
++   - `structure.md` - File structure and navigation guidance
++   - `workflow.md` - Development workflow and commands
++   - `typescript.md` - TypeScript and coding standards
++
++2. Created `.qoder/README.md` with documentation on how to use Qoder with this project
++
++## Purpose
++
++These configuration files allow developers using Qoder to:
++- Follow project-specific guidelines automatically
++- Maintain consistency with existing code patterns
++- Adhere to security requirements (RLS policies)
++- Use appropriate technology choices (TypeScript, React Native, Expo, Supabase)
++- Follow proper testing practices
++- Maintain the correct project structure
++
++## How to Apply
++
++To apply this patch:
++```bash
++git apply qoder-configuration.patch
++```
++
++Or to check what the patch would do before applying:
++```bash
++git apply --stat qoder-configuration.patch
++git apply --check qoder-configuration.patch
++```
+\ No newline at end of file
+-- 
+2.47.1
+

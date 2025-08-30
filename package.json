@@ -8,7 +8,10 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "db:migrate": "./scripts/db-manager.sh migrate",
+    "db:cleanup": "./scripts/db-manager.sh cleanup",
+    "db:status": "./scripts/db-manager.sh status"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",

@@ -1,13 +1,12 @@
 import { useAuth } from '@/contexts/AuthContext';
-import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 
 export default function HomeScreen() {
   const { session, userType, hasSelectedRegion, hasCompletedWorkSetup, isLoading } = useAuth();
@@ -50,35 +49,40 @@ export default function HomeScreen() {
     );
   }
 
-  // User is properly authenticated and set up - show main content
+  // Authenticated and set up: simple, clean home content (no template)
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome to Worky!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">You're all set up!</ThemedText>
-        <ThemedText>
-          Your profile is complete and you can now use all Worky features.
+    <ThemedView style={styles.page}>
+      <View style={styles.headerSection}>
+        <ThemedText type="h1">Welcome to Worky</ThemedText>
+        <ThemedText style={styles.subheader}>
+          Book handymen instantly or manage your slots with ease.
         </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Profile Status</ThemedText>
-        <ThemedText>
-          Account Type: {userType === 'customer' ? 'Customer' : 'Handyman'}{"\n"}
-          Region: {hasSelectedRegion ? 'Selected' : 'Not Selected'}{"\n"}
-          {userType === 'handyman' && `Setup: ${hasCompletedWorkSetup ? 'Complete' : 'Incomplete'}`}
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      </View>
+
+      <View style={styles.grid}>
+        <Card>
+          <ThemedText type="h3">Profile Status</ThemedText>
+          <ThemedText>
+            Account Type: {userType === 'customer' ? 'Customer' : 'Handyman'}
+          </ThemedText>
+          <ThemedText>Region: {hasSelectedRegion ? 'Selected' : 'Not Selected'}</ThemedText>
+          {userType === 'handyman' && (
+            <ThemedText>
+              Setup: {hasCompletedWorkSetup ? 'Complete' : 'Incomplete'}
+            </ThemedText>
+          )}
+        </Card>
+
+        <Card>
+          <ThemedText type="h3">Next Steps</ThemedText>
+          {userType === 'customer' ? (
+            <Button title="Explore Available Slots" onPress={() => router.push('/(customer)/dashboard')} />
+          ) : (
+            <Button title="Manage Time Slots" onPress={() => router.push('/(handyman)/time-slots')} />
+          )}
+        </Card>
+      </View>
+    </ThemedView>
   );
 }
 
@@ -88,6 +92,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+  },
+  page: {
+    flex: 1,
+    gap: 24,
+    paddingVertical: 24,
   },
   title: {
     fontSize: 24,
@@ -112,21 +121,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  headerSection: {
+    gap: 6,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  subheader: {
+    opacity: 0.8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  grid: {
+    gap: 16,
   },
 });
-

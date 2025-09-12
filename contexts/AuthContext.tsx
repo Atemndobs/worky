@@ -142,6 +142,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
               return;
             } else {
               console.error('❌ Failed to create user record:', createError);
+              // Handle RLS policy violation specifically
+              if (createError?.code === '42501') {
+                console.log('🔐 RLS policy violation - this might be expected during signup');
+                // Wait a bit and try to fetch again, as the trigger might create the record
+                setTimeout(async () => {
+                  const { data: retryData, error: retryError } = await supabase
+                    .from('users')
+                    .select('user_type, profile_data')
+                    .eq('id', userId)
+                    .single();
+                  
+                  if (!retryError && retryData) {
+                    console.log('✅ User record now exists after trigger:', retryData);
+                    setUserType(retryData.user_type);
+                    setHasSelectedRegion(!!retryData.profile_data?.selected_region);
+                    setHasCompletedWorkSetup(!!retryData.profile_data?.work_setup_completed);
+                    clearTimeout(timeoutId);
+                    setIsLoading(false);
+                    return;
+                  } else {
+                    console.log('⚠️ Still no user record after waiting for trigger');
+                  }
+                }, 2000);
+              }
             }
           }
           
@@ -255,47 +279,50 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return { error };
     }
 
-    // Update user type in database after trigger creates the profile
+    // For signUp, we no longer need to manually create the user record
+    // The trigger function should handle this automatically
+    // Just wait a bit for the trigger to complete, then update state
     if (data.user) {
       // Wait for the trigger to complete, then update the user type
       setTimeout(async () => {
         try {
-          // First, check if the user record exists
-          const { data: existingUser, error: fetchError } = await supabase
+          // Check if the user record exists
+          const { data: userData, error: fetchError } = await supabase
             .from('users')
-            .select('id')
+            .select('user_type')
             .eq('id', data.user!.id)
             .single();
 
-          if (fetchError || !existingUser) {
-            // If user record doesn't exist, create it
-            const { error: insertError } = await supabase
-              .from('users')
-              .insert({
-                id: data.user!.id,
-                email: data.user!.email!,
-                user_type: userType
-              });
-            
-            if (insertError) {
-              console.error('Error creating user record:', insertError);
-            }
+          if (!fetchError && userData) {
+            // User record exists, update state
+            setUserType(userData.user_type);
+            setHasSelectedRegion(false); // New user needs to select region
           } else {
-            // Update existing record
-            const { error: updateError } = await supabase
-              .from('users')
-              .update({ user_type: userType })
-              .eq('id', data.user!.id);
-
-            if (updateError) {
-              console.error('Error updating user type:', updateError);
-            }
+            // User record doesn't exist yet, wait a bit longer
+            console.log('⏳ Waiting for trigger to create user record...');
+            setTimeout(async () => {
+              const { data: retryData, error: retryError } = await supabase
+                .from('users')
+                .select('user_type')
+                .eq('id', data.user!.id)
+                .single();
+              
+              if (!retryError && retryData) {
+                setUserType(retryData.user_type);
+                setHasSelectedRegion(false);
+              } else {
+                console.log('⚠️ User record still not found after extended wait');
+                setError('Account created but profile setup is delayed. Please try logging in.');
+              }
+            }, 3000);
           }
         } catch (error) {
-          console.error('Error handling user record:', error);
+          console.error('Error checking user record:', error);
           setError('Account created but there was an issue setting up your profile. Please try logging in.');
+        } finally {
+          setIsLoading(false);
         }
-      }, 1500); // Wait a bit longer for trigger to complete
+      }, 2000); // Wait a bit longer for trigger to complete
     }
 
     return { error };

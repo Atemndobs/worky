@@ -16,7 +16,7 @@
     "/android/",
     "/ios/"
   ],
-  "moduleNameMapping": {
+  "moduleNameMapper": {
     "^@/(.*)$": "<rootDir>/$1"
   }
 }

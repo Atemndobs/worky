@@ -7,6 +7,9 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { GlassView } from '@/components/ui/GlassView';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function RegisterScreen() {
   const { type } = useLocalSearchParams<{ type: 'handyman' | 'customer' }>();
@@ -57,115 +60,98 @@ export default function RegisterScreen() {
   };
 
   return (
-    <KeyboardAvoidingView 
-      style={styles.container} 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <ThemedView style={styles.content}>
-          <View style={styles.header}>
-            <ThemedText type="title" style={styles.title}>
-              Create {userType === 'handyman' ? 'Handyman' : 'Customer'} Account
-            </ThemedText>
-            <ThemedText style={styles.subtitle}>
-              {userType === 'handyman' 
-                ? 'Join our platform to offer your services and earn money'
-                : 'Find skilled handymen for your urgent tasks'
-              }
-            </ThemedText>
-          </View>
-
-          <ErrorMessage error={error} />
-
-          <View style={styles.form}>
-            <View style={styles.inputContainer}>
-              <ThemedText style={styles.label}>Email</ThemedText>
-              <TextInput
-                style={[
-                  styles.input,
-                  { 
-                    backgroundColor: Colors[colorScheme ?? 'light'].background,
-                    borderColor: Colors[colorScheme ?? 'light'].tabIconDefault,
-                    color: Colors[colorScheme ?? 'light'].text,
-                  }
-                ]}
-                value={email}
-                onChangeText={handleFieldChange(setEmail)}
-                placeholder="Enter your email"
-                placeholderTextColor={Colors[colorScheme ?? 'light'].tabIconDefault}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
+    <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <LinearGradient
+        colors={['#F8FBFF', '#F2F6FB', '#EDF2F7']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={StyleSheet.absoluteFill}
+      />
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+        <ThemedView variant="container" style={styles.page}>
+          <GlassView style={styles.glassCard}>
+            <View style={styles.header}>
+              <ThemedText type="h1">Create {userType === 'handyman' ? 'Handyman' : 'Customer'} Account</ThemedText>
+              <ThemedText style={styles.subtitle}>
+                {userType === 'handyman'
+                  ? 'Join our platform to offer your services and earn money'
+                  : 'Find skilled handymen for your urgent tasks'}
+              </ThemedText>
             </View>
 
-            <View style={styles.inputContainer}>
-              <ThemedText style={styles.label}>Password</ThemedText>
-              <TextInput
-                style={[
-                  styles.input,
-                  { 
-                    backgroundColor: Colors[colorScheme ?? 'light'].background,
-                    borderColor: Colors[colorScheme ?? 'light'].tabIconDefault,
-                    color: Colors[colorScheme ?? 'light'].text,
-                  }
-                ]}
-                value={password}
-                onChangeText={handleFieldChange(setPassword)}
-                placeholder="Create a password (min. 6 characters)"
-                placeholderTextColor={Colors[colorScheme ?? 'light'].tabIconDefault}
-                secureTextEntry
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
-            </View>
+            <ErrorMessage error={error} />
 
-            <View style={styles.inputContainer}>
-              <ThemedText style={styles.label}>Confirm Password</ThemedText>
-              <TextInput
-                style={[
-                  styles.input,
-                  { 
-                    backgroundColor: Colors[colorScheme ?? 'light'].background,
-                    borderColor: Colors[colorScheme ?? 'light'].tabIconDefault,
-                    color: Colors[colorScheme ?? 'light'].text,
-                  }
-                ]}
-                value={confirmPassword}
-                onChangeText={handleFieldChange(setConfirmPassword)}
-                placeholder="Confirm your password"
-                placeholderTextColor={Colors[colorScheme ?? 'light'].tabIconDefault}
-                secureTextEntry
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
+            <View style={styles.fieldGroup}>
+              <View style={styles.inputRow}>
+                <Ionicons name="mail-outline" size={18} color={Colors[colorScheme ?? 'light'].tabIconDefault} style={styles.leadingIcon} />
+                <TextInput
+                  style={[styles.input, { color: Colors[colorScheme ?? 'light'].text }]}
+                  value={email}
+                  onChangeText={handleFieldChange(setEmail)}
+                  placeholder="Email"
+                  placeholderTextColor={Colors[colorScheme ?? 'light'].tabIconDefault}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  autoComplete="email"
+                />
+              </View>
+
+              <View style={styles.inputRow}>
+                <Ionicons name="lock-closed-outline" size={18} color={Colors[colorScheme ?? 'light'].tabIconDefault} style={styles.leadingIcon} />
+                <TextInput
+                  style={[styles.input, { color: Colors[colorScheme ?? 'light'].text }]}
+                  value={password}
+                  onChangeText={handleFieldChange(setPassword)}
+                  placeholder="Password (min. 6 characters)"
+                  placeholderTextColor={Colors[colorScheme ?? 'light'].tabIconDefault}
+                  secureTextEntry
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  autoComplete="password"
+                />
+              </View>
+
+              <View style={styles.inputRow}>
+                <Ionicons name="lock-closed-outline" size={18} color={Colors[colorScheme ?? 'light'].tabIconDefault} style={styles.leadingIcon} />
+                <TextInput
+                  style={[styles.input, { color: Colors[colorScheme ?? 'light'].text }]}
+                  value={confirmPassword}
+                  onChangeText={handleFieldChange(setConfirmPassword)}
+                  placeholder="Confirm password"
+                  placeholderTextColor={Colors[colorScheme ?? 'light'].tabIconDefault}
+                  secureTextEntry
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  autoComplete="password"
+                />
+              </View>
             </View>
 
             <Pressable
-              style={[
-                styles.button,
-                { backgroundColor: Colors[colorScheme ?? 'light'].tint },
-                isLoading && styles.buttonDisabled
+              style={({ pressed }) => [
+                styles.cta,
+                {
+                  backgroundColor: Colors[colorScheme ?? 'light'].tint,
+                  opacity: pressed || isLoading ? 0.9 : 1,
+                  transform: [{ translateY: pressed ? 1 : 0 }],
+                },
               ]}
               onPress={handleRegister}
               disabled={isLoading}
             >
-              <Text style={[styles.buttonText, { color: '#000000', fontWeight: '600' }]}>
+              <Text style={{ color: '#000', fontWeight: '600', fontSize: 16 }}>
                 {isLoading ? 'Creating Account...' : 'Create Account'}
               </Text>
             </Pressable>
-          </View>
 
-          <View style={styles.footer}>
-            <ThemedText style={styles.footerText}>
-              Already have an account?{' '}
-            </ThemedText>
-            <Pressable onPress={() => router.push('/(auth)/login')}>
-              <ThemedText style={[styles.footerLink, { color: Colors[colorScheme ?? 'light'].tint }]}>
-                Sign In
-              </ThemedText>
-            </Pressable>
-          </View>
+            <View style={styles.footerRow}>
+              <ThemedText style={{ opacity: 0.8 }}>Already have an account?</ThemedText>
+              <Pressable onPress={() => router.push('/(auth)/login')}>
+                <ThemedText type="defaultSemiBold" style={styles.link}>Sign in</ThemedText>
+              </Pressable>
+            </View>
+          </GlassView>
         </ThemedView>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -173,76 +159,26 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    textAlign: 'center',
-    lineHeight: 24,
-    opacity: 0.8,
-  },
-  form: {
-    marginBottom: 40,
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  input: {
-    height: 50,
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    fontSize: 16,
-  },
-  button: {
-    height: 50,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: '#000000',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  footer: {
+  root: { flex: 1 },
+  scrollContent: { flexGrow: 1, paddingVertical: 24 },
+  page: { flex: 1 },
+  glassCard: { padding: 22, gap: 18, maxWidth: 520, alignSelf: 'center' },
+  header: { gap: 6, alignItems: 'center' },
+  subtitle: { opacity: 0.75, textAlign: 'center' },
+  fieldGroup: { gap: 14 },
+  inputRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
+    height: 52,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.25)',
+    backgroundColor: 'rgba(255,255,255,0.15)',
   },
-  footerText: {
-    fontSize: 14,
-  },
-  footerLink: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
+  leadingIcon: { marginRight: 10, opacity: 0.8 },
+  input: { flex: 1, height: '100%', fontSize: 16 },
+  cta: { height: 54, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  footerRow: { flexDirection: 'row', justifyContent: 'center', gap: 6 },
+  link: { fontSize: 14, fontWeight: '600', color: Colors.light.tint },
 });

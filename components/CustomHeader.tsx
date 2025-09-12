@@ -40,58 +40,70 @@ export function CustomHeader({ title }: CustomHeaderProps) {
     }
   };
 
+  const scheme = colorScheme ?? 'light';
+
   return (
-    <View style={[
-      styles.headerContainer, 
-      { 
-        backgroundColor: Colors[colorScheme ?? 'light'].background,
-        borderBottomColor: Colors[colorScheme ?? 'light'].tabIconDefault,
-      }
-    ]}>
-      <View style={styles.headerContent}>
-        {title && (
-          <Text style={[
-            styles.headerTitle, 
-            { color: Colors[colorScheme ?? 'light'].text }
-          ]}>
-            {title}
-          </Text>
-        )}
-        <View style={styles.rightSection}>
-          <Pressable
-            style={[
-              styles.languageButton,
-              { borderColor: Colors[colorScheme ?? 'light'].tabIconDefault }
-            ]}
-            onPress={() => setShowLanguageModal(true)}
-          >
-            <IconSymbol 
-              name="globe" 
-              size={14} 
-              color={Colors[colorScheme ?? 'light'].text} 
-            />
-            <Text style={[
-              styles.languageText,
-              { color: Colors[colorScheme ?? 'light'].text }
-            ]}>
-              {selectedLanguage.slice(0, 2).toUpperCase()}
+    <View
+      style={[
+        styles.headerContainer,
+        {
+          backgroundColor: Colors[scheme].background,
+          borderBottomColor: Colors[scheme].border,
+        },
+        Platform.OS === 'web' && styles.headerWeb,
+      ]}
+    >
+      <View style={[styles.headerInner, Platform.OS === 'web' && styles.headerInnerWeb]}>
+        <View style={styles.headerContent}>
+          {title && (
+            <Text
+              style={[
+                styles.headerTitle,
+                { color: Colors[scheme].text },
+              ]}
+              accessibilityRole={Platform.OS === 'web' ? 'heading' : undefined}
+              aria-level={Platform.OS === 'web' ? 2 : undefined}
+            >
+              {title}
             </Text>
-          </Pressable>
-          
-          <Pressable
-            style={[
-              styles.signOutButton,
-              { backgroundColor: Colors[colorScheme ?? 'light'].tint }
-            ]}
-            onPress={handleSignOut}
-          >
-            <IconSymbol 
-              name="rectangle.portrait.and.arrow.right" 
-              size={16} 
-              color="#000" 
-            />
-            <Text style={styles.signOutText}>Sign Out</Text>
-          </Pressable>
+          )}
+          <View style={styles.rightSection}>
+            <Pressable
+              accessibilityRole={Platform.OS === 'web' ? 'button' : undefined}
+              style={({ hovered, pressed }) => [
+                styles.languageButton,
+                Platform.OS === 'web' && { cursor: 'pointer' },
+                {
+                  borderColor: Colors[scheme].border,
+                  backgroundColor: hovered ? Colors[scheme].surface : 'transparent',
+                  opacity: pressed ? 0.9 : 1,
+                },
+              ]}
+              onPress={() => setShowLanguageModal(true)}
+            >
+              <IconSymbol name="globe" size={14} color={Colors[scheme].text} />
+              <Text style={[styles.languageText, { color: Colors[scheme].text }]}>
+                {selectedLanguage.slice(0, 2).toUpperCase()}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              accessibilityRole={Platform.OS === 'web' ? 'button' : undefined}
+              style={({ hovered, pressed }) => [
+                styles.signOutButton,
+                Platform.OS === 'web' && { cursor: 'pointer' },
+                {
+                  backgroundColor: Colors[scheme].tint,
+                  transform: hovered ? [{ translateY: -1 }] : undefined,
+                  opacity: pressed ? 0.9 : 1,
+                },
+              ]}
+              onPress={handleSignOut}
+            >
+              <IconSymbol name="rectangle.portrait.and.arrow.right" size={16} color="#000" />
+              <Text style={styles.signOutText}>Sign Out</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
 
@@ -110,18 +122,12 @@ export function CustomHeader({ title }: CustomHeaderProps) {
           accessible={false}
         >
           <Pressable 
-            style={[
-              styles.languageModal, 
-              { backgroundColor: Colors[colorScheme ?? 'light'].background }
-            ]}
+            style={[styles.languageModal, { backgroundColor: Colors[scheme].background }]}
             onPress={() => {}}
             accessible={true}
             accessibilityLabel="Select language"
           >
-            <Text style={[
-              styles.modalTitle,
-              { color: Colors[colorScheme ?? 'light'].text }
-            ]}>
+            <Text style={[styles.modalTitle, { color: Colors[scheme].text }]}>
               Choose Language
             </Text>
             
@@ -131,21 +137,21 @@ export function CustomHeader({ title }: CustomHeaderProps) {
                 style={[
                   styles.languageOption,
                   {
-                    backgroundColor: selectedLanguage === language.name 
-                      ? Colors[colorScheme ?? 'light'].tint 
-                      : 'transparent',
+                    backgroundColor:
+                      selectedLanguage === language.name ? Colors[scheme].tint : 'transparent',
                   }
                 ]}
                 onPress={() => handleLanguageSelect(language.name)}
               >
-                <Text style={[
-                  styles.languageOptionText,
-                  {
-                    color: selectedLanguage === language.name 
-                      ? '#000' 
-                      : Colors[colorScheme ?? 'light'].text
-                  }
-                ]}>
+                <Text
+                  style={[
+                    styles.languageOptionText,
+                    {
+                      color:
+                        selectedLanguage === language.name ? '#000' : Colors[scheme].text,
+                    },
+                  ]}
+                >
                   {language.name}
                 </Text>
               </Pressable>
@@ -155,10 +161,7 @@ export function CustomHeader({ title }: CustomHeaderProps) {
               style={styles.cancelButton}
               onPress={() => setShowLanguageModal(false)}
             >
-              <Text style={[
-                styles.cancelButtonText,
-                { color: Colors[colorScheme ?? 'light'].tint }
-              ]}>
+              <Text style={[styles.cancelButtonText, { color: Colors[scheme].tint }]}>
                 Cancel
               </Text>
             </Pressable>
@@ -171,10 +174,24 @@ export function CustomHeader({ title }: CustomHeaderProps) {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    paddingTop: Platform.OS === 'ios' ? 44 : 20, // Account for status bar
+    paddingTop: Platform.OS === 'ios' ? 44 : 20,
     paddingBottom: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
+  },
+  headerWeb: {
+    position: 'sticky',
+    top: 0,
+    zIndex: 100,
+    // subtle backdrop-like effect
+    backdropFilter: 'saturate(120%) blur(6px)' as any,
+  },
+  headerInner: {
+    width: '100%',
+  },
+  headerInnerWeb: {
+    maxWidth: 1200,
+    alignSelf: 'center',
   },
   headerContent: {
     flexDirection: 'row',

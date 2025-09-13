@@ -1,10 +1,10 @@
-# Bolo Mobile App
+# Worky Mobile App
 
-A React Native mobile application implementing the user journeys for the Bolo handyman marketplace platform.
+A React Native mobile application implementing the user journeys for the Worky handyman marketplace platform.
 
 ## Overview
 
-This mobile app provides a native experience for both handymen and customers to interact with the Bolo platform. It implements the core user journeys outlined in the project documentation, including:
+This mobile app provides a native experience for both handymen and customers to interact with the Worky platform. It implements the core user journeys outlined in the project documentation, including:
 
 - **Handyman Features**: Profile management, availability setting, auction creation, earnings tracking
 - **Customer Features**: Service discovery, instant booking, auction participation, booking management
@@ -112,7 +112,7 @@ The app uses a consistent design system based on shadcn/ui principles:
 
 ## Contributing
 
-This mobile app is part of the larger Bolo platform ecosystem. When making changes:
+This mobile app is part of the larger Worky platform ecosystem. When making changes:
 
 1. Follow the established component patterns
 2. Maintain type safety with TypeScript

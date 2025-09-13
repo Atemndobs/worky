@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "bolo-mobile",
-    "slug": "bolo-mobile",
+    "name": "Worky",
+    "slug": "worky",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

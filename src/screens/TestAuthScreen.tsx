@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native'
+import Ionicons from '@expo/vector-icons/Ionicons'
 import { Button } from '../components/ui/button'
 import { Card, CardContent, CardHeader } from '../components/ui/card'
 import { runManualAuthTests, testNewUserRegistration, migrateExistingUser } from '../test/manual-auth-test'
@@ -106,6 +107,22 @@ export function TestAuthScreen() {
       <View style={styles.header}>
         <Text style={styles.title}>🧪 Auth Testing Suite</Text>
         <Text style={styles.subtitle}>Test real Supabase authentication</Text>
+      </View>
+
+      {/* Test credentials panel shown only here */}
+      <View style={styles.credBox}>
+        <View style={styles.credRow}>
+          <Ionicons name="create-outline" size={14} color="#22c55e" />
+          <Text style={styles.credText}>Test User: atemndobs@gmail.com</Text>
+        </View>
+        <View style={styles.credRow}>
+          <Ionicons name="key-outline" size={14} color="#f59e0b" />
+          <Text style={styles.credText}>Password: Atem1234</Text>
+        </View>
+        <View style={styles.credRow}>
+          <Ionicons name="stats-chart" size={14} color="#22c55e" />
+          <Text style={styles.credText}>Using Real Supabase Database</Text>
+        </View>
       </View>
 
       <Card style={styles.card}>
@@ -236,5 +253,24 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#999',
     fontStyle: 'italic',
+  },
+  credBox: {
+    marginHorizontal: 16,
+    marginBottom: 8,
+    backgroundColor: '#121212',
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+  },
+  credRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 6,
+  },
+  credText: {
+    color: '#E5E7EB',
+    fontSize: 14,
   },
 })

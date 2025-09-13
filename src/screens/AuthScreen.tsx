@@ -25,8 +25,8 @@ export function AuthScreen() {
   const [isLoading, setIsLoading] = useState(false)
 
   // Basic form fields
-  const [email, setEmail] = useState('atemndobs@gmail.com') // Pre-fill for testing
-  const [password, setPassword] = useState('Atem1234') // Pre-fill for testing
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   // Signup additional fields
   const [businessName, setBusinessName] = useState('')
@@ -274,12 +274,7 @@ export function AuthScreen() {
                   </Text>
                 </TouchableOpacity>
 
-                {/* Testing Info */}
-                <View style={styles.testInfo}>
-                  <Text style={styles.testInfoText}>🧪 Test User: atemndobs@gmail.com</Text>
-                  <Text style={styles.testInfoText}>🔑 Password: Atem1234</Text>
-                  <Text style={styles.testInfoText}>📊 Using Real Supabase Database</Text>
-                </View>
+                {/* Test credentials moved to TestAuthScreen */}
               </View>
             </View>
           </View>
@@ -431,18 +426,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-  testInfo: {
-    marginTop: 8,
-    padding: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  testInfoText: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.7)',
-    textAlign: 'center',
-    lineHeight: 16,
-  },
+  // test credentials info styles removed; shown only in TestAuthScreen
 })

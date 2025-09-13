@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { AuthProvider } from './src/contexts/AuthContext'
 import { ThemeProvider } from './src/contexts/ThemeContext'
+import { ToastProvider } from './src/contexts/ToastContext'
 import { AppNavigator } from './src/navigation/AppNavigator'
 import { runConnectionTests } from './src/utils/test-connection'
 // import './global.css' // Temporarily disabled to avoid build hanging
@@ -18,8 +19,10 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <AppNavigator />
-        <StatusBar style="auto" />
+        <ToastProvider>
+          <AppNavigator />
+          <StatusBar style="auto" />
+        </ToastProvider>
       </AuthProvider>
     </ThemeProvider>
   )

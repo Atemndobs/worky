@@ -1,11 +1,9 @@
-import React, { useState } from 'react'
-import { View, Text, ImageBackground, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { View, Text, ImageBackground, StyleSheet, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native'
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
-import { Button } from '../components/ui/button'
-import { Input } from '../components/ui/input'
-import { Card, CardContent } from '../components/ui/card'
-import { UserType } from '../types'
+// UI components not used in this screen after styling restoration
+import { UserType } from '../types/database.types'
 import { RootStackParamList } from '../navigation/AppNavigator'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -15,36 +13,98 @@ type AuthScreenRouteProp = RouteProp<RootStackParamList, 'Auth'>
 export function AuthScreen() {
   const navigation = useNavigation<AuthScreenNavigationProp>()
   const route = useRoute<AuthScreenRouteProp>()
-  const { setUserType } = useAuth()
+  const { signUp, signIn, error, clearError } = useAuth()
   const { userType } = route.params
-  const [activeTab, setActiveTab] = useState<'signup' | 'signin'>('signup')
-  const [formData, setFormData] = useState({
-    firstName: 'John',
-    lastName: '',
-    email: '',
-    phoneNumber: '(775) 351-6501',
-    password: '',
-    confirmPassword: '',
-  })
-  const [showPassword, setShowPassword] = useState(false)
+
+  const [activeTab, setActiveTab] = useState<'signup' | 'signin'>('signin')
   const [isLoading, setIsLoading] = useState(false)
+
+  // Basic form fields
+  const [email, setEmail] = useState('atemndobs@gmail.com') // Pre-fill for testing
+  const [password, setPassword] = useState('Atem1234') // Pre-fill for testing
+
+  // Signup additional fields
+  const [businessName, setBusinessName] = useState('')
+  const [hourlyRate, setHourlyRate] = useState('')
+  const [region, setRegion] = useState('Zurich')
+  const [skills, setSkills] = useState('')
+  const [phone, setPhone] = useState('')
+
+  // Clear error when switching tabs
+  useEffect(() => {
+    clearError()
+  }, [activeTab, clearError])
 
   const handleSubmit = async () => {
     setIsLoading(true)
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      setUserType(userType)
+    console.log(`🔐 Starting ${activeTab} flow for ${userType} with email: ${email}`)
+
+    try {
+      // Basic validation
+      if (!email || !password) {
+        Alert.alert('Error', 'Please fill in email and password')
+        return
+      }
+
+      if (activeTab === 'signup' && userType === 'handyman' && (!businessName || !hourlyRate)) {
+        Alert.alert('Error', 'Please fill in business details')
+        return
+      }
+
+      let result
+
+      if (activeTab === 'signin') {
+        // REAL LOGIN - Use Supabase authentication
+        console.log('🔐 Attempting real login...')
+        result = await signIn(email, password)
+      } else {
+        // REAL SIGNUP - Use Supabase authentication
+        console.log('📝 Attempting real signup...')
+
+        const signUpData = {
+          email,
+          password,
+          userType,
+          ...(userType === 'handyman' ? {
+            businessName,
+            hourlyRate: parseFloat(hourlyRate) || 50,
+            region: region || 'Zurich',
+            skills: skills.split(',').map(s => s.trim()).filter(s => s.length > 0),
+            phone
+          } : {})
+        }
+
+        result = await signUp(signUpData)
+      }
+
+      if (result.error) {
+        console.error('❌ Auth failed:', result.error)
+        Alert.alert('Authentication Failed', result.error)
+        return
+      }
+
+      console.log('✅ Auth successful!')
+
+      // Navigation will be handled automatically by AuthContext state change
+      // But we can still navigate manually for immediate feedback
       if (userType === 'handyman') {
         navigation.navigate('HandymanDashboard')
       } else {
         navigation.navigate('CustomerDashboard')
       }
-    }, 2000)
+
+    } catch (error) {
+      console.error('💥 Auth error:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Something went wrong. Please try again.'
+      Alert.alert('Error', errorMessage)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const userTypeTitle = userType === 'handyman' ? 'Handyman' : 'Customer'
   const userTypeIcon = userType === 'handyman' ? '🔧' : '🏠'
+  const isLogin = activeTab === 'signin'
 
   return (
     <ImageBackground
@@ -52,7 +112,7 @@ export function AuthScreen() {
       style={styles.background}
       resizeMode="cover"
     >
-      <ScrollView style={styles.scrollView}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={styles.container}>
           <View style={styles.cardContainer}>
             <View style={styles.card}>
@@ -88,52 +148,48 @@ export function AuthScreen() {
                     </Text>
                   </TouchableOpacity>
                 </View>
-                <TouchableOpacity 
-                  onPress={() => navigation.goBack()} 
+
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
                   style={styles.closeButton}
                 >
                   <Text style={styles.closeButtonText}>✕</Text>
                 </TouchableOpacity>
               </View>
 
-              {/* Title - Only show for sign in */}
-              {activeTab === 'signin' && (
+              {/* User Type Header / Title */}
+              {isLogin && (
                 <Text style={styles.title}>
                   Welcome back
                 </Text>
               )}
+              {!isLogin && (
+                <View style={styles.userTypeHeader}>
+                  <Text style={styles.userTypeIcon}>{userTypeIcon}</Text>
+                  <Text style={styles.userTypeTitle}>
+                    Join as {userTypeTitle}
+                  </Text>
+                </View>
+              )}
+
+              {/* Error Display */}
+              {error && (
+                <View style={styles.errorContainer}>
+                  <Text style={styles.errorText}>❌ {error}</Text>
+                  <TouchableOpacity onPress={clearError} style={styles.errorDismiss}>
+                    <Text style={styles.errorDismissText}>✕</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
 
               {/* Form */}
-              <View style={styles.formContainer}>
-                {activeTab === 'signup' && (
-                  <View style={styles.nameRow}>
-                    <View style={styles.inputContainer}>
-                      <TextInput
-                        style={styles.input}
-                        value={formData.firstName}
-                        onChangeText={(text) => setFormData({ ...formData, firstName: text })}
-                        placeholder="First name"
-                        placeholderTextColor="rgba(255, 255, 255, 0.4)"
-                      />
-                    </View>
-                    <View style={styles.inputContainer}>
-                      <TextInput
-                        style={styles.input}
-                        value={formData.lastName}
-                        onChangeText={(text) => setFormData({ ...formData, lastName: text })}
-                        placeholder="Last name"
-                        placeholderTextColor="rgba(255, 255, 255, 0.4)"
-                      />
-                    </View>
-                  </View>
-                )}
-
+              <View style={styles.form}>
+                {/* Email */}
                 <View style={styles.inputContainer}>
-                  <Text style={styles.inputIcon}>✉</Text>
                   <TextInput
-                    style={[styles.input, styles.inputWithIcon]}
-                    value={formData.email}
-                    onChangeText={(text) => setFormData({ ...formData, email: text })}
+                    style={styles.input}
+                    value={email}
+                    onChangeText={setEmail}
                     placeholder="Enter your email"
                     placeholderTextColor="rgba(255, 255, 255, 0.4)"
                     keyboardType="email-address"
@@ -141,105 +197,93 @@ export function AuthScreen() {
                   />
                 </View>
 
-                {activeTab === 'signup' && (
-                  <View style={styles.inputContainer}>
-                    <View style={styles.flagContainer}>
-                      <View style={styles.flag}>
-                        <View style={styles.flagRed} />
-                        <View style={styles.flagBlue} />
-                        <View style={styles.flagWhite} />
-                      </View>
-                      <Text style={styles.inputIcon}>▼</Text>
-                    </View>
-                    <TextInput
-                      style={[styles.input, styles.inputWithIcon]}
-                      value={formData.phoneNumber}
-                      onChangeText={(text) => setFormData({ ...formData, phoneNumber: text })}
-                      placeholder="Phone number"
-                      placeholderTextColor="rgba(255, 255, 255, 0.4)"
-                      keyboardType="phone-pad"
-                    />
-                  </View>
-                )}
-
+                {/* Password */}
                 <View style={styles.inputContainer}>
                   <TextInput
                     style={styles.input}
-                    value={formData.password}
-                    onChangeText={(text) => setFormData({ ...formData, password: text })}
-                    placeholder="Password"
+                    value={password}
+                    onChangeText={setPassword}
+                    placeholder="Enter your password"
                     placeholderTextColor="rgba(255, 255, 255, 0.4)"
-                    secureTextEntry={!showPassword}
+                    secureTextEntry
                   />
-                  <TouchableOpacity
-                    onPress={() => setShowPassword(!showPassword)}
-                    style={styles.passwordToggle}
-                  >
-                    <Text style={styles.inputIcon}>
-                      {showPassword ? '👁' : '👁‍🗨'}
-                    </Text>
-                  </TouchableOpacity>
                 </View>
 
-                {activeTab === 'signup' && (
-                  <View style={styles.inputContainer}>
-                    <TextInput
-                      style={styles.input}
-                      value={formData.confirmPassword}
-                      onChangeText={(text) => setFormData({ ...formData, confirmPassword: text })}
-                      placeholder="Confirm password"
-                      placeholderTextColor="rgba(255, 255, 255, 0.4)"
-                      secureTextEntry={!showPassword}
-                    />
-                  </View>
-                )}
-
-                {activeTab === 'signin' && (
-                  <View style={styles.optionsRow}>
-                    <TouchableOpacity style={styles.checkboxContainer}>
-                      <View style={styles.checkbox} />
-                      <Text style={styles.checkboxText}>Remember me</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                      <Text style={styles.forgotPassword}>Forgot password?</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
-
-              {/* Submit Button */}
-              <TouchableOpacity
-                onPress={handleSubmit}
-                disabled={isLoading}
-                style={styles.submitButton}
-              >
-                <Text style={styles.submitButtonText}>
-                  {isLoading ? 'Please wait...' : (activeTab === 'signup' ? 'Create an account' : 'Sign in')}
-                </Text>
-              </TouchableOpacity>
-
-              {/* Social Login */}
-              <View style={styles.socialContainer}>
-                <View style={styles.divider}>
-                  <View style={styles.dividerLine} />
-                  <Text style={styles.dividerText}>
-                    {activeTab === 'signup' ? 'OR SIGN IN WITH' : 'OR CONTINUE WITH'}
-                  </Text>
-                  <View style={styles.dividerLine} />
-                </View>
-
-                <View style={styles.socialButtons}>
-                  <TouchableOpacity style={styles.socialButton}>
-                    <View style={styles.googleIcon}>
-                      <Text style={styles.googleText}>G</Text>
+                {/* Handyman additional fields for signup */}
+                {!isLogin && userType === 'handyman' && (
+                  <>
+                    <View style={styles.inputContainer}>
+                      <TextInput
+                        style={styles.input}
+                        value={businessName}
+                        onChangeText={setBusinessName}
+                        placeholder="Business Name *"
+                        placeholderTextColor="rgba(255, 255, 255, 0.4)"
+                      />
                     </View>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.socialButton}>
-                    <Text style={styles.appleIcon}>🍎</Text>
-                  </TouchableOpacity>
+
+                    <View style={styles.inputContainer}>
+                      <TextInput
+                        style={styles.input}
+                        value={hourlyRate}
+                        onChangeText={setHourlyRate}
+                        placeholder="Hourly Rate (CHF) *"
+                        placeholderTextColor="rgba(255, 255, 255, 0.4)"
+                        keyboardType="numeric"
+                      />
+                    </View>
+
+                    <View style={styles.inputContainer}>
+                      <TextInput
+                        style={styles.input}
+                        value={region}
+                        onChangeText={setRegion}
+                        placeholder="Region"
+                        placeholderTextColor="rgba(255, 255, 255, 0.4)"
+                      />
+                    </View>
+
+                    <View style={styles.inputContainer}>
+                      <TextInput
+                        style={styles.input}
+                        value={skills}
+                        onChangeText={setSkills}
+                        placeholder="Skills (comma separated)"
+                        placeholderTextColor="rgba(255, 255, 255, 0.4)"
+                      />
+                    </View>
+
+                    <View style={styles.inputContainer}>
+                      <TextInput
+                        style={styles.input}
+                        value={phone}
+                        onChangeText={setPhone}
+                        placeholder="Phone"
+                        placeholderTextColor="rgba(255, 255, 255, 0.4)"
+                        keyboardType="phone-pad"
+                      />
+                    </View>
+                  </>
+                )}
+
+                {/* Submit Button */}
+                <TouchableOpacity
+                  onPress={handleSubmit}
+                  disabled={isLoading}
+                  style={styles.submitButton}
+                >
+                  <Text style={styles.submitButtonText}>
+                    {isLoading ? (isLogin ? 'Signing in...' : 'Signing up...') : (isLogin ? 'Sign in' : 'Create an account')}
+                  </Text>
+                </TouchableOpacity>
+
+                {/* Testing Info */}
+                <View style={styles.testInfo}>
+                  <Text style={styles.testInfoText}>🧪 Test User: atemndobs@gmail.com</Text>
+                  <Text style={styles.testInfoText}>🔑 Password: Atem1234</Text>
+                  <Text style={styles.testInfoText}>📊 Using Real Supabase Database</Text>
                 </View>
               </View>
-
             </View>
           </View>
         </View>
@@ -254,8 +298,13 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  scrollView: {
-    flex: 1,
+   scrollView: {
+     flex: 1,
+   },
+  scrollContent: {
+    flexGrow: 1,
+    // justifyContent: 'center',
+    // alignItems: 'center',
   },
   container: {
     flex: 1,
@@ -273,10 +322,7 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     padding: 32,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.25,
     shadowRadius: 16,
     elevation: 8,
@@ -324,117 +370,66 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   closeButtonText: {
-    color: 'rgba(255, 255, 255, 0.8)',
     fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.6)',
   },
   title: {
-    fontSize: 30,
-    fontWeight: 'normal',
     color: '#ffffff',
-    marginBottom: 32,
+    fontSize: 24,
+    fontWeight: '600',
+    marginBottom: 24,
+    textAlign: 'center',
   },
-  formContainer: {
-    marginBottom: 32,
-  },
-  nameRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 16,
-  },
-  inputContainer: {
-    position: 'relative',
-    marginBottom: 16,
-  },
-  input: {
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    borderRadius: 16,
-    height: 56,
-    paddingHorizontal: 16,
-    color: '#ffffff',
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  inputWithIcon: {
-    paddingLeft: 48,
-  },
-  inputIcon: {
-    position: 'absolute',
-    left: 16,
-    top: 18,
-    color: 'rgba(255, 255, 255, 0.4)',
-    fontSize: 16,
-  },
-  passwordToggle: {
-    position: 'absolute',
-    right: 16,
-    top: 18,
-  },
-  flagContainer: {
-    position: 'absolute',
-    left: 16,
-    top: 18,
-    flexDirection: 'row',
+  userTypeHeader: {
     alignItems: 'center',
-    gap: 8,
+    marginBottom: 24,
   },
-  flag: {
-    width: 24,
-    height: 16,
-    borderRadius: 2,
-    overflow: 'hidden',
-    position: 'relative',
+  userTypeIcon: {
+    fontSize: 32,
+    marginBottom: 8,
   },
-  flagRed: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: 8,
-    height: 16,
-    backgroundColor: '#ef4444',
+  userTypeTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#ffffff',
   },
-  flagBlue: {
-    position: 'absolute',
-    top: 0,
-    left: 8,
-    width: 8,
-    height: 16,
-    backgroundColor: '#3b82f6',
-  },
-  flagWhite: {
-    position: 'absolute',
-    top: 0,
-    left: 16,
-    width: 8,
-    height: 16,
-    backgroundColor: '#ffffff',
-  },
-  optionsRow: {
+  errorContainer: {
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 16,
   },
-  checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  errorText: {
+    color: '#fecaca',
+    fontSize: 14,
+    flex: 1,
   },
-  checkbox: {
-    width: 16,
-    height: 16,
-    borderRadius: 2,
+  errorDismiss: {
+    padding: 4,
+  },
+  errorDismissText: {
+    color: '#fecaca',
+    fontSize: 16,
+  },
+  form: {
+    gap: 16,
+  },
+  inputContainer: {
+    gap: 6,
+    position: 'relative',
+  },
+  input: {
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 16,
+    color: '#ffffff',
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    marginRight: 8,
-  },
-  checkboxText: {
-    color: 'rgba(255, 255, 255, 0.6)',
-    fontSize: 14,
-  },
-  forgotPassword: {
-    color: 'rgba(255, 255, 255, 0.6)',
-    fontSize: 14,
   },
   submitButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
@@ -451,54 +446,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-  socialContainer: {
-    marginBottom: 32,
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  dividerText: {
-    color: 'rgba(255, 255, 255, 0.4)',
-    fontSize: 14,
-    fontWeight: '500',
-    paddingHorizontal: 16,
-  },
-  socialButtons: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  socialButton: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    borderRadius: 16,
-    height: 56,
-    alignItems: 'center',
-    justifyContent: 'center',
+  testInfo: {
+    marginTop: 8,
+    padding: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
-  googleIcon: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#ffffff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  googleText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#4285f4',
-  },
-  appleIcon: {
-    fontSize: 20,
-    color: '#ffffff',
+  testInfoText: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.7)',
+    textAlign: 'center',
+    lineHeight: 16,
   },
 })

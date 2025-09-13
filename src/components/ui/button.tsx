@@ -23,8 +23,8 @@ export function Button({
     styles.base,
     styles[variant],
     styles[size],
-    disabled && styles.disabled,
-    style,
+    ...(disabled ? [styles.disabled] : []),
+    ...(style ? [style] : []),
   ]
 
   const textStyle: TextStyle[] = [

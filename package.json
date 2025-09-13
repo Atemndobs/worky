@@ -6,7 +6,12 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:atemndobs": "jest __tests__/auth-login-atemndobs.test.ts",
+    "test:integration": "RUN_INTEGRATION_TESTS=true jest __tests__/integration-login-atemndobs.test.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",
@@ -40,6 +45,12 @@
   },
   "devDependencies": {
     "@types/react": "~19.1.0",
+    "@types/jest": "^29.5.8",
+    "@react-native-async-storage/async-storage": "jest-mock",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "react-native-testing-library": "^6.0.0",
+    "ts-jest": "^29.1.1",
     "tailwindcss": "^3.4.0",
     "typescript": "~5.9.2"
   },

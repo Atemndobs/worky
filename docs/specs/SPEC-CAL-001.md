@@ -110,21 +110,25 @@ END:VEVENT
 
 ## Risks
 
+### Dual Booking System Conflicts
+- **Risk:** Calendar availability conflicts with auction slot creation
+- **Mitigation:** Clear handyman interface showing calendar vs auction status
+
+### Booking Type Confusion
+- **Risk:** Users confused between calendar bookings and auction wins
+- **Mitigation:** Clear labeling and separate interfaces for each booking type
+
 ### Schedule Changes
 - **Risk:** Bookings rescheduled after calendar export
 - **Mitigation:** Manual re-export required (phase 1), feed URLs (phase 2)
 
-### Timezone Confusion
-- **Risk:** Incorrect time display in user calendars
-- **Mitigation:** Rigorous timezone testing, clear time display in UI
+### Confirmation Workflow
+- **Risk:** Different confirmation requirements (calendar vs auction) causing confusion
+- **Mitigation:** Clear UI indication of confirmation status and requirements
 
-### Privacy Concerns
-- **Risk:** Sensitive information in calendar events
-- **Mitigation:** Limit exposed data, customer consent for contact sharing
-
-### Calendar Compatibility
-- **Risk:** ICS not working in specific calendar applications
-- **Mitigation:** Test across major platforms, fallback options
+### Calendar Integration Complexity
+- **Risk:** Complex setup for handyman calendar availability
+- **Mitigation:** Simple calendar integration UI with clear setup instructions
 
 ## Telemetry
 
@@ -168,12 +172,13 @@ END:VEVENT
 
 ## Open Questions
 
-1. **Update Propagation:** How should calendar events be updated when bookings change?
-2. **Cancellation Handling:** Should cancelled bookings send calendar cancellation events?
-3. **Feed URLs:** What's the security model for calendar feed URLs?
-4. **Event Duration:** Should we include buffer time before/after appointments?
-5. **Recurring Exports:** Should handymen be able to set up automatic calendar syncing?
-6. **Privacy Controls:** What booking information should be optional in calendar events?
+1. **Availability Conflicts:** How to handle when handymen create auctions for already-available calendar time?
+2. **Booking Priority:** If calendar booking and auction end simultaneously, which takes priority?
+3. **Calendar Integration:** Which calendar platforms should be prioritized for direct booking?
+4. **Confirmation Timing:** Should calendar bookings have a timeout for handyman confirmation?
+5. **Auction Calendar Slots:** Should auction wins automatically block calendar availability?
+6. **Update Propagation:** How should calendar events be updated when bookings change?
+7. **Recurring Availability:** Should handymen be able to set recurring availability patterns?
 
 ## Dependencies
 

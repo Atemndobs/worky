@@ -12,6 +12,21 @@ dist
 dist-ssr
 *.local
 
+# Environment files (IMPORTANT: Never commit these!)
+.env
+.env.local
+.env.production
+.env.staging
+.env.development
+*.env
+
+# Secrets and credentials
+*.key
+*.pem
+*.p12
+*.keystore
+config/secrets.*
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -22,3 +37,16 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Testing
+coverage/
+*.tsbuildinfo
+
+# OS generated files
+Thumbs.db

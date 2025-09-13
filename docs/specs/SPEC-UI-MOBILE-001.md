@@ -1,6 +1,6 @@
 # SPEC-UI-MOBILE-001 — Expo App UI (Dark) from Designs
 
-This spec maps the attached designs to an Expo SDK 53 app using TypeScript and `expo-router`. It translates WORKY_BUILD_INSTRUCTIONS.md into a mobile-first implementation that conforms to the Windsurf‑Aligned App Rules.
+This spec maps the user journeys from the Bolo auction system to an Expo SDK 53 app using TypeScript and `expo-router`. It implements the dual booking system (calendar + auctions) with real-time bidding capabilities.
 
 - App stack: TypeScript, Expo SDK 53, React Native 0.79.6, `expo-router`, Supabase client, `react-native-svg` + `victory-native` (charts), `expo-linear-gradient` (accents), `expo-image`.
 - Environment: only `EXPO_PUBLIC_*` vars. Store UTC in DB; display Europe/Zurich.
@@ -14,28 +14,39 @@ app/
 │  ├─ login.tsx
 │  ├─ register.tsx
 │  └─ welcome.tsx
-├─ (tabs)/               # Bottom tabs
-│  ├─ _layout.tsx        # Custom TabBar
-│  ├─ dashboard.tsx      # Middle screen in design (analytics)
-│  ├─ wallet.tsx         # Right screen (balance & transactions)
-│  └─ profile.tsx        # Left screen (user shortcuts)
+├─ (handyman)/           # Handyman-specific flow
+│  ├─ dashboard.tsx      # Calendar status & auction performance
+│  ├─ calendar.tsx       # Set calendar availability
+│  ├─ auctions.tsx       # Create & manage auctions
+│  ├─ bookings.tsx       # Calendar bookings & auction wins
+│  └─ profile.tsx        # Business profile
+├─ (customer)/           # Customer-specific flow
+│  ├─ dashboard.tsx      # Browse auctions & calendar slots
+│  ├─ auctions.tsx       # Active bids & auction participation
+│  ├─ bookings.tsx       # Calendar bookings & auction wins
+│  └─ profile.tsx        # Personal profile
 ├─ _layout.tsx
-└─ index.tsx             # Redirect based on auth
+└─ index.tsx             # Role-based routing
 
 components/
-├─ TabBar.tsx            # Custom bottom bar with ring
-├─ ChartBars.tsx         # Weekly bars
-├─ MoneyCard.tsx         # Balance card
-├─ TransactionItem.tsx   # Transactions row
-└─ GridTile.tsx          # Profile shortcut tiles
+├─ AuctionCard.tsx       # Real-time auction display
+├─ BiddingInterface.tsx  # Auction bidding controls
+├─ CountdownTimer.tsx    # Auction countdown display
+├─ CalendarSlot.tsx      # Calendar booking component
+├─ RevenueChart.tsx      # Handyman earnings analytics
+└─ NotificationBell.tsx  # Real-time bid notifications
 
 lib/
 ├─ supabase.ts           # Supabase client (public envs)
+├─ auctions.ts           # Auction logic & real-time subscriptions
+├─ calendar.ts           # Calendar integration helpers
 ├─ currency.ts           # CHF helpers
 └─ tz.ts                 # Europe/Zurich conversions
 
 contexts/
-└─ AuthContext.tsx       # see WORKY_BUILD_INSTRUCTIONS AuthContext, adapted
+├─ AuthContext.tsx       # User authentication with role-based routing
+├─ AuctionContext.tsx    # Real-time auction state management
+└─ NotificationContext.tsx # Bid alerts & booking notifications
 
 constants/
 ├─ SwissRegions.ts
@@ -75,9 +86,11 @@ export const theme = {
 }
 ```
 
-## Bottom Tab Bar
-- Four icons: dashboard, list/history, center action ring, menu/more OR profile; in our mapping: dashboard, wallet, center ring (action), profile.
-- Center ring: gradient ring; on press opens quick actions sheet (future). MVP: haptic + no-op.
+## Navigation Architecture
+- Role-based navigation: Handyman vs Customer flows
+- Handyman tabs: Dashboard (calendar status + auction performance), Calendar Management, Auction Creation, Bookings
+- Customer tabs: Browse (auctions + calendar slots), Active Bids, Bookings, Profile
+- Real-time notifications integrated across all screens
 
 ```tsx
 // components/TabBar.tsx
@@ -131,10 +144,11 @@ export default TabBar
 
 ## Screens
 
-### Dashboard (Analytics)
-- Top: Week range and currency selector (future).
-- Bars: 7 columns with two series (income vs. count) simplified to one series for MVP.
-- Categories: 3–4 large rounded tiles with counts.
+### Handyman Dashboard
+- Top: Calendar availability status and upcoming auctions
+- Revenue analytics: Auction earnings vs calendar bookings
+- Active auctions: Real-time bid monitoring
+- Quick actions: Create auction, set availability
 
 ```tsx
 // app/(tabs)/dashboard.tsx
@@ -199,8 +213,11 @@ export default function ChartBars({ values }: { values: number[] }) {
 }
 ```
 
-### Wallet (Balance + Transactions)
-- Large centered balance card, currency chips, last transactions list.
+### Customer Dashboard  
+- Active auctions: Browse and filter by location/skills
+- Real-time bid status: Current auctions and outbid alerts
+- Calendar slots: Available direct booking opportunities
+- Budget tracking: Spending limits and bid history
 ```tsx
 // app/(tabs)/wallet.tsx
 import { View, Text, ScrollView } from 'react-native'
@@ -230,8 +247,12 @@ export default function Wallet() {
 }
 ```
 
-### Profile (Shortcuts)
-- Avatar, name, email; 6 tiles grid: Settings, Notifications, Verification, Support, Referral, Legal.
+### Auction Interface
+- Real-time bid display with countdown timer
+- Competitive bidding with minimum increment enforcement
+- Automatic outbid notifications
+- Reserve price and auction parameter display
+- Winner announcement and automatic booking confirmation
 ```tsx
 // app/(tabs)/profile.tsx
 import { View, Text, Image } from 'react-native'
@@ -280,19 +301,27 @@ export const supabase = createClient(
 - Run `npx expo prebuild` only if adding native modules (not required here).
 
 ## Acceptance Criteria
-- Bottom tab with center gradient ring visible and tappable.
-- Dashboard renders weekly bars and category cards as shown.
-- Wallet shows big balance card and 3+ transaction items with color coding.
-- Profile shows avatar, name, email, and 6 grid tiles.
+- Role-based navigation between handyman and customer flows
+- Real-time auction bidding with countdown timers
+- Calendar integration for direct booking system
+- Auction creation with customizable parameters (duration, starting price, reserve price)
+- Real-time notifications for auction bids and booking confirmations
+- Revenue analytics for handymen showing auction vs calendar earnings
 - Dark theme throughout; safe-area respected; no console errors.
 
-## Out of Scope (MVP visual)
-- Real data, filters, and currency switcher; action sheet for ring; charts interactions.
+## Out of Scope (MVP)
+- Payment processing integration (Phase 3)
+- Proxy bidding functionality
+- Advanced auction analytics
+- Multi-language support
 
 ## Handover Notes
-- After scaffolding, move UI files into the app repo paths above.
-- Link Supabase project and apply SQL/RLS from WORKY_BUILD_INSTRUCTIONS.md.
-- Keep constants in `constants/SwissRegions.ts` and `constants/WorkTypes.ts` as per repo rules.
+- Implement dual booking system: Calendar integration + Auction system
+- Set up Supabase Realtime channels for auction bidding
+- Configure role-based routing and authentication
+- Apply RLS policies for auction and booking data security
+- Keep constants in `constants/SwissRegions.ts` and `constants/WorkTypes.ts`
+- Implement comprehensive notification system for auctions and bookings
 
 ```
 Spec ID: SPEC-UI-MOBILE-001

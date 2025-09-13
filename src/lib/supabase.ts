@@ -33,8 +33,9 @@ export type SupabaseClient = typeof supabase
 export const testSupabaseConnection = async (): Promise<boolean> => {
   try {
     // Simple connection test - just check if we can make a query
+    // Use a publicly readable table under RLS policies
     const { data, error } = await supabase
-      .from('users')
+      .from('handyman_profiles')
       .select('id')
       .limit(1)
 

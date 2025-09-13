@@ -1,8 +1,8 @@
-# User Types and Journeys - Bolo App (v2)
+# User Types and Journeys - Worky App (v2)
 
 ## Overview
 
-The Bolo app has two distinct user types, each with specific roles and workflows within the platform. This document outlines the user types, their journeys, and a user matrix detailing their permissions and capabilities.
+The Worky app has two distinct user types, each with specific roles and workflows within the platform. This document outlines the user types, their journeys, and a user matrix detailing their permissions and capabilities.
 
 ## User Types
 

@@ -1,9 +1,12 @@
 import React from 'react'
-import { View, Text, ImageBackground, StyleSheet, Dimensions, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
-import { UserType } from '../types'
+import { UserType } from '../types/database.types'
 import { RootStackParamList } from '../navigation/AppNavigator'
+import { useTheme } from '../contexts/ThemeContext'
+import { Background } from '../components/Background'
+import { glassCard } from '../components/themeStyles'
 
 type WelcomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Welcome'>
 
@@ -11,23 +14,20 @@ const { width, height } = Dimensions.get('window')
 
 export function WelcomeScreen() {
   const navigation = useNavigation<WelcomeScreenNavigationProp>()
+  const { theme, setTheme } = useTheme()
 
   const handleSelectUserType = (userType: UserType) => {
     navigation.navigate('Auth', { userType })
   }
 
   return (
-    <ImageBackground
-      source={require('../../assets/gradient-background.jpeg')}
-      style={styles.background}
-      resizeMode="cover"
-    >
+    <Background style={styles.background}>
       <View style={styles.container}>
         <View style={styles.cardContainer}>
-          <View style={styles.card}>
+          <View style={[styles.card, theme === 'glass' && glassCard]}>
             {/* Logo/Brand */}
             <View style={styles.logoContainer}>
-              <Text style={styles.logoText}>Bolo</Text>
+              <Text style={styles.logoText}>Worky</Text>
               <Text style={styles.subtitleText}>
                 Connect with skilled handymen instantly
               </Text>
@@ -73,11 +73,31 @@ export function WelcomeScreen() {
               <Text style={styles.footerText}>
                 By continuing, you agree to our Terms & Service
               </Text>
+              <View style={styles.themeRow}>
+                <Text style={styles.footerText}>Theme:</Text>
+                <View style={styles.themeButtons}>
+                  <TouchableOpacity onPress={() => setTheme('gradient')} style={[styles.themeButton, theme === 'gradient' && styles.themeButtonActive]}>
+                    <Text style={styles.themeButtonText}>Gradient</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setTheme('mascot')} style={[styles.themeButton, theme === 'mascot' && styles.themeButtonActive]}>
+                    <Text style={styles.themeButtonText}>Mascot</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setTheme('glass')} style={[styles.themeButton, theme === 'glass' && styles.themeButtonActive]}>
+                    <Text style={styles.themeButtonText}>Glass</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <TouchableOpacity
+                style={styles.testButton}
+                onPress={() => navigation.navigate('TestAuth')}
+              >
+                <Text style={styles.testButtonText}>🧪 Test Auth</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
       </View>
-    </ImageBackground>
+    </Background>
   )
 }
 
@@ -177,8 +197,48 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.1)',
   },
+  themeRow: {
+    marginTop: 12,
+    gap: 8,
+  },
+  themeButtons: {
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'center',
+  },
+  themeButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+  },
+  themeButtonActive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    borderColor: 'rgba(255, 255, 255, 0.35)',
+  },
+  themeButtonText: {
+    color: 'rgba(255, 255, 255, 0.85)',
+    fontSize: 12,
+  },
   footerText: {
     color: 'rgba(255, 255, 255, 0.3)',
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  testButton: {
+    marginTop: 16,
+    alignSelf: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  testButtonText: {
+    color: 'rgba(255, 255, 255, 0.8)',
     fontSize: 12,
     textAlign: 'center',
   },

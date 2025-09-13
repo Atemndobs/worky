@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, ImageBackground, StyleSheet, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native'
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 // UI components not used in this screen after styling restoration
 import { UserType } from '../types/database.types'
 import { RootStackParamList } from '../navigation/AppNavigator'
 import { useAuth } from '../contexts/AuthContext'
+import { useTheme } from '../contexts/ThemeContext'
+import { Background } from '../components/Background'
+import { glassCard } from '../components/themeStyles'
 
 type AuthScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Auth'>
 type AuthScreenRouteProp = RouteProp<RootStackParamList, 'Auth'>
@@ -14,6 +17,7 @@ export function AuthScreen() {
   const navigation = useNavigation<AuthScreenNavigationProp>()
   const route = useRoute<AuthScreenRouteProp>()
   const { signUp, signIn, error, clearError } = useAuth()
+  const { theme } = useTheme()
   const { userType } = route.params
 
   const [activeTab, setActiveTab] = useState<'signup' | 'signin'>('signin')
@@ -107,15 +111,12 @@ export function AuthScreen() {
   const isLogin = activeTab === 'signin'
 
   return (
-    <ImageBackground
-      source={require('../../assets/gradient-background.jpeg')}
-      style={styles.background}
-      resizeMode="cover"
-    >
+    <Background style={styles.background}>
+      
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={styles.container}>
           <View style={styles.cardContainer}>
-            <View style={styles.card}>
+            <View style={[styles.card, theme === 'glass' && glassCard]}>
               {/* Header with tabs and close button */}
               <View style={styles.header}>
                 <View style={styles.tabContainer}>
@@ -288,7 +289,7 @@ export function AuthScreen() {
           </View>
         </View>
       </ScrollView>
-    </ImageBackground>
+    </Background>
   )
 }
 

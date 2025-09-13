@@ -6,10 +6,16 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:unit": "jest src/**/*.test.ts",
+    "test:integration": "jest src/test/integration/",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
+    "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-navigation/bottom-tabs": "^7.4.7",
     "@react-navigation/native": "^7.1.17",
@@ -29,11 +35,15 @@
     "react-native-svg": "15.12.1",
     "react-native-vector-icons": "^10.3.0",
     "react-native-web": "^0.21.0",
-    "tailwind-merge": "^3.3.1",
-    "@react-native-async-storage/async-storage": "2.2.0"
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
+    "@testing-library/jest-native": "^5.4.3",
+    "@testing-library/react-native": "^13.3.3",
+    "@types/jest": "^30.0.0",
     "@types/react": "~19.1.0",
+    "jest": "^30.1.3",
+    "jest-expo": "^54.0.11",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.9.2"
   },

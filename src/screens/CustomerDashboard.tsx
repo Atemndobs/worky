@@ -1,17 +1,17 @@
 import React from 'react'
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ImageBackground, TextInput } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, TextInput } from 'react-native'
 import { Card, CardContent, CardHeader } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { useAuth } from '../contexts/AuthContext'
+import { Background } from '../components/Background'
+import { useTheme } from '../contexts/ThemeContext'
+import { glassCard } from '../components/themeStyles'
 
 export function CustomerDashboard() {
   const { logout } = useAuth()
+  const { theme } = useTheme()
   return (
-    <ImageBackground
-      source={require('../../assets/gradient-background.jpeg')}
-      style={styles.background}
-      resizeMode="cover"
-    >
+    <Background style={styles.background}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.container}>
           {/* Header */}
@@ -26,7 +26,7 @@ export function CustomerDashboard() {
           </View>
 
           {/* Search Bar */}
-          <View style={styles.searchCard}>
+          <View style={[styles.searchCard, theme === 'glass' && glassCard]}>
             <View style={styles.searchContainer}>
               <TextInput
                 style={styles.searchInput}
@@ -40,7 +40,7 @@ export function CustomerDashboard() {
           </View>
 
           {/* Quick Actions */}
-          <View style={styles.card}>
+          <View style={[styles.card, theme === 'glass' && glassCard]}>
             <Text style={styles.cardTitle}>Quick Actions</Text>
             <View style={styles.cardContent}>
               <TouchableOpacity style={styles.primaryButton}>
@@ -56,7 +56,7 @@ export function CustomerDashboard() {
           </View>
 
           {/* Available Services */}
-          <View style={styles.card}>
+          <View style={[styles.card, theme === 'glass' && glassCard]}>
             <Text style={styles.cardTitle}>Available Services</Text>
             <View style={styles.cardContent}>
               <View style={styles.serviceItem}>
@@ -90,7 +90,7 @@ export function CustomerDashboard() {
           </View>
 
           {/* Live Auctions */}
-          <View style={styles.card}>
+          <View style={[styles.card, theme === 'glass' && glassCard]}>
             <Text style={styles.cardTitle}>Live Auctions</Text>
             <View style={styles.cardContent}>
               <View style={styles.auctionItem}>
@@ -122,7 +122,7 @@ export function CustomerDashboard() {
           </View>
 
           {/* My Bookings */}
-          <View style={styles.card}>
+          <View style={[styles.card, theme === 'glass' && glassCard]}>
             <Text style={styles.cardTitle}>My Bookings</Text>
             <View style={styles.cardContent}>
               <View style={styles.bookingItem}>
@@ -146,7 +146,7 @@ export function CustomerDashboard() {
           </View>
         </View>
       </ScrollView>
-    </ImageBackground>
+    </Background>
   )
 }
 const styles = StyleSheet.create({

@@ -1,17 +1,17 @@
 import React from 'react'
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native'
 import { Card, CardContent, CardHeader } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { useAuth } from '../contexts/AuthContext'
+import { Background } from '../components/Background'
+import { glassCard } from '../components/themeStyles'
+import { useTheme } from '../contexts/ThemeContext'
 
 export function HandymanDashboard() {
   const { logout } = useAuth()
+  const { theme } = useTheme()
   return (
-    <ImageBackground
-      source={require('../../assets/gradient-background.jpeg')}
-      style={styles.background}
-      resizeMode="cover"
-    >
+    <Background style={styles.background}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.container}>
           {/* Header */}
@@ -38,7 +38,7 @@ export function HandymanDashboard() {
           </View>
 
           {/* Quick Actions */}
-          <View style={styles.card}>
+          <View style={[styles.card, theme === 'glass' && glassCard]}>
             <Text style={styles.cardTitle}>Quick Actions</Text>
             <View style={styles.cardContent}>
               <TouchableOpacity style={styles.primaryButton}>
@@ -54,7 +54,7 @@ export function HandymanDashboard() {
           </View>
 
           {/* Recent Activity */}
-          <View style={styles.card}>
+          <View style={[styles.card, theme === 'glass' && glassCard]}>
             <Text style={styles.cardTitle}>Recent Activity</Text>
             <View style={styles.cardContent}>
               <View style={styles.activityItem}>
@@ -78,7 +78,7 @@ export function HandymanDashboard() {
           </View>
 
           {/* Active Auctions */}
-          <View style={styles.card}>
+          <View style={[styles.card, theme === 'glass' && glassCard]}>
             <Text style={styles.cardTitle}>Active Auctions</Text>
             <View style={styles.cardContent}>
               <View style={styles.auctionItem}>
@@ -98,7 +98,7 @@ export function HandymanDashboard() {
           </View>
         </View>
       </ScrollView>
-    </ImageBackground>
+    </Background>
   )
 }
 

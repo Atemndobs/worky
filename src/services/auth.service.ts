@@ -72,7 +72,9 @@ export class AuthService {
         throw new AuthError('User creation failed', 'USER_CREATION_FAILED')
       }
 
-      // 2. Create user record in our users table
+      // 2. Create user record in our users table (optional)
+      // Rely primarily on DB trigger (handle_new_user) to insert into public.users using auth metadata
+      // Some environments have RLS that blocks client INSERT into users; treat failure as non-fatal
       const { error: userError } = await supabase
         .from('users')
         .insert({
@@ -82,9 +84,8 @@ export class AuthService {
         })
 
       if (userError) {
-        // Clean up auth user if our user creation fails
-        await supabase.auth.admin.deleteUser(authData.user.id)
-        throw new AuthError('Failed to create user profile', 'PROFILE_CREATION_FAILED')
+        console.warn('Users insert blocked by RLS or already exists. Relying on trigger handle_new_user.', userError.message)
+        // Do not delete the auth user; proceed and fetch created row via trigger
       }
 
       // 3. Create handyman profile if needed

@@ -9,6 +9,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { useTheme } from '../contexts/ThemeContext'
 import { Background } from '../components/Background'
 import { glassCard } from '../components/themeStyles'
+import Ionicons from '@expo/vector-icons/Ionicons'
 
 type AuthScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Auth'>
 type AuthScreenRouteProp = RouteProp<RootStackParamList, 'Auth'>
@@ -107,7 +108,7 @@ export function AuthScreen() {
   }
 
   const userTypeTitle = userType === 'handyman' ? 'Handyman' : 'Customer'
-  const userTypeIcon = userType === 'handyman' ? '🔧' : '🏠'
+  const userIconName = userType === 'handyman' ? 'construct-outline' : 'home-outline'
   const isLogin = activeTab === 'signin'
 
   return (
@@ -150,11 +151,8 @@ export function AuthScreen() {
                   </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity
-                  onPress={() => navigation.goBack()}
-                  style={styles.closeButton}
-                >
-                  <Text style={styles.closeButtonText}>✕</Text>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeButton}>
+                  <Ionicons name="close" size={18} color="rgba(255, 255, 255, 0.8)" />
                 </TouchableOpacity>
               </View>
 
@@ -166,19 +164,17 @@ export function AuthScreen() {
               )}
               {!isLogin && (
                 <View style={styles.userTypeHeader}>
-                  <Text style={styles.userTypeIcon}>{userTypeIcon}</Text>
-                  <Text style={styles.userTypeTitle}>
-                    Join as {userTypeTitle}
-                  </Text>
+                  <Ionicons name={userIconName} size={28} color="#ffffff" style={{ marginBottom: 8 }} />
+                  <Text style={styles.userTypeTitle}>Join as {userTypeTitle}</Text>
                 </View>
               )}
 
               {/* Error Display */}
               {error && (
                 <View style={styles.errorContainer}>
-                  <Text style={styles.errorText}>❌ {error}</Text>
+                  <Text style={styles.errorText}>{String(error)}</Text>
                   <TouchableOpacity onPress={clearError} style={styles.errorDismiss}>
-                    <Text style={styles.errorDismissText}>✕</Text>
+                    <Ionicons name="close-circle" size={16} color="rgba(255,255,255,0.8)" />
                   </TouchableOpacity>
                 </View>
               )}
@@ -370,10 +366,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
-  closeButtonText: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.6)',
-  },
   title: {
     color: '#ffffff',
     fontSize: 24,
@@ -384,10 +376,6 @@ const styles = StyleSheet.create({
   userTypeHeader: {
     alignItems: 'center',
     marginBottom: 24,
-  },
-  userTypeIcon: {
-    fontSize: 32,
-    marginBottom: 8,
   },
   userTypeTitle: {
     fontSize: 18,
@@ -410,10 +398,6 @@ const styles = StyleSheet.create({
   },
   errorDismiss: {
     padding: 4,
-  },
-  errorDismissText: {
-    color: '#fecaca',
-    fontSize: 16,
   },
   form: {
     gap: 16,

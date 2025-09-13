@@ -7,6 +7,7 @@ import { RootStackParamList } from '../navigation/AppNavigator'
 import { useTheme } from '../contexts/ThemeContext'
 import { Background } from '../components/Background'
 import { glassCard } from '../components/themeStyles'
+import Ionicons from '@expo/vector-icons/Ionicons'
 
 type WelcomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Welcome'>
 
@@ -45,7 +46,7 @@ export function WelcomeScreen() {
                   style={styles.userTypeButton}
                 >
                   <View style={styles.buttonContent}>
-                    <Text style={styles.buttonIcon}>🔧</Text>
+                    <Ionicons name="construct-outline" size={20} color="#ffffff" style={styles.buttonIcon} />
                     <View style={styles.buttonTextContainer}>
                       <Text style={styles.buttonTitle}>I'm a Handyman</Text>
                       <Text style={styles.buttonSubtitle}>Offer your services</Text>
@@ -58,7 +59,7 @@ export function WelcomeScreen() {
                   style={styles.userTypeButton}
                 >
                   <View style={styles.buttonContent}>
-                    <Text style={styles.buttonIcon}>🏠</Text>
+                    <Ionicons name="home-outline" size={20} color="#ffffff" style={styles.buttonIcon} />
                     <View style={styles.buttonTextContainer}>
                       <Text style={styles.buttonTitle}>I need help</Text>
                       <Text style={styles.buttonSubtitle}>Find skilled handymen</Text>
@@ -91,7 +92,10 @@ export function WelcomeScreen() {
                 style={styles.testButton}
                 onPress={() => navigation.navigate('TestAuth')}
               >
-                <Text style={styles.testButtonText}>🧪 Test Auth</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <Ionicons name="flask-outline" size={14} color="rgba(255, 255, 255, 0.8)" />
+                  <Text style={styles.testButtonText}>Test Auth</Text>
+                </View>
               </TouchableOpacity>
             </View>
           </View>
@@ -175,8 +179,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   buttonIcon: {
-    fontSize: 18,
-    color: '#ffffff',
+    marginTop: 2,
   },
   buttonTextContainer: {
     alignItems: 'flex-start',

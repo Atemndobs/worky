@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { Background } from '../components/Background'
 import { useTheme } from '../contexts/ThemeContext'
 import { glassCard } from '../components/themeStyles'
+import Ionicons from '@expo/vector-icons/Ionicons'
 
 export function CustomerDashboard() {
   const { logout } = useAuth()
@@ -66,7 +67,10 @@ export function CustomerDashboard() {
                 </View>
                 <Text style={styles.serviceTime}>Available tomorrow 2PM-4PM</Text>
                 <View style={styles.serviceFooter}>
-                  <Text style={styles.serviceRating}>⭐ 4.8 (24 reviews)</Text>
+                  <View style={styles.serviceRatingRow}>
+                    <Ionicons name="star" size={14} color="#f5c518" />
+                    <Text style={styles.serviceRatingText}>4.8 (24 reviews)</Text>
+                  </View>
                   <TouchableOpacity style={styles.bookButton}>
                     <Text style={styles.bookButtonText}>Book Now</Text>
                   </TouchableOpacity>
@@ -80,7 +84,10 @@ export function CustomerDashboard() {
                 </View>
                 <Text style={styles.serviceTime}>Available today 6PM-8PM</Text>
                 <View style={styles.serviceFooter}>
-                  <Text style={styles.serviceRating}>⭐ 4.9 (18 reviews)</Text>
+                  <View style={styles.serviceRatingRow}>
+                    <Ionicons name="star" size={14} color="#f5c518" />
+                    <Text style={styles.serviceRatingText}>4.9 (18 reviews)</Text>
+                  </View>
                   <TouchableOpacity style={styles.bookButton}>
                     <Text style={styles.bookButtonText}>Book Now</Text>
                   </TouchableOpacity>
@@ -308,6 +315,15 @@ const styles = StyleSheet.create({
   },
   serviceRating: {
     color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 14,
+  },
+  serviceRatingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  serviceRatingText: {
+    color: 'rgba(255, 255, 255, 0.85)',
     fontSize: 14,
   },
   bookButton: {

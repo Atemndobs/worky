@@ -1,5 +1,7 @@
 import React from 'react'
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, TextInput } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import { StackNavigationProp } from '@react-navigation/stack'
 import { Card, CardContent, CardHeader } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { useAuth } from '../contexts/AuthContext'
@@ -7,10 +9,13 @@ import { Background } from '../components/Background'
 import { useTheme } from '../contexts/ThemeContext'
 import { glassCard } from '../components/themeStyles'
 import Ionicons from '@expo/vector-icons/Ionicons'
+import { RootStackParamList } from '../navigation/AppNavigator'
 
+type Nav = StackNavigationProp<RootStackParamList>
 export function CustomerDashboard() {
   const { logout } = useAuth()
   const { theme } = useTheme()
+  const navigation = useNavigation<Nav>()
   return (
     <Background style={styles.background}>
       <ScrollView style={styles.scrollView}>
@@ -47,7 +52,7 @@ export function CustomerDashboard() {
               <TouchableOpacity style={styles.primaryButton}>
                 <Text style={styles.primaryButtonText}>Browse Available Slots</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.secondaryButton}>
+              <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.navigate('BrowseAuctions')}>
                 <Text style={styles.secondaryButtonText}>Join Auctions</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.secondaryButton}>

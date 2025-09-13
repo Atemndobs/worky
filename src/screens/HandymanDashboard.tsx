@@ -6,10 +6,15 @@ import { useAuth } from '../contexts/AuthContext'
 import { Background } from '../components/Background'
 import { glassCard } from '../components/themeStyles'
 import { useTheme } from '../contexts/ThemeContext'
+import { useNavigation } from '@react-navigation/native'
+import { StackNavigationProp } from '@react-navigation/stack'
+import { RootStackParamList } from '../navigation/AppNavigator'
 
+type Nav = StackNavigationProp<RootStackParamList>
 export function HandymanDashboard() {
   const { logout } = useAuth()
   const { theme } = useTheme()
+  const navigation = useNavigation<Nav>()
   return (
     <Background style={styles.background}>
       <ScrollView style={styles.scrollView}>
@@ -44,7 +49,7 @@ export function HandymanDashboard() {
               <TouchableOpacity style={styles.primaryButton}>
                 <Text style={styles.primaryButtonText}>Set Availability</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.secondaryButton}>
+              <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.navigate('CreateAuction')}>
                 <Text style={styles.secondaryButtonText}>Create Auction</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.secondaryButton}>

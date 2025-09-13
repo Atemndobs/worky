@@ -96,3 +96,18 @@
 ## Cross-References
 - UI spec for Expo dark design: `docs/specs/SPEC-UI-MOBILE-001.md`
 - Build checklist for mobile app repo: `docs/expo-build-checklist.md`
+
+## Progress
+
+- [x] Phase 1: Project Foundation & Expo Setup
+- [x] Phase 2: Database Integration & Auth Foundation (Supabase + RLS)
+- [ ] Phase 3: Core Auction System
+  - [x] Types, service layer, realtime hooks
+  - [x] Create Auction form (CHF rules, duration, reserve, auto‑extend)
+  - [x] Browse Auctions with filters (service, region)
+  - [x] Auction Detail with timer, realtime bids, outbid toast, ended summary
+  - [x] Dashboard wiring (Create, Browse, embedded active lists)
+  - [ ] Calendar conflict checks and slot selection
+  - [ ] Deeper validations, polish and tests
+- [ ] Phase 5: Notifications & Auction Management
+- [ ] Phase 6: Documentation & Architecture Specs

@@ -7,6 +7,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
+    "dev:clean": "bash scripts/dev-clean-start.sh",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:unit": "jest src/**/*.test.ts",

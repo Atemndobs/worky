@@ -13,13 +13,10 @@ module.exports = {
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   transformIgnorePatterns: [
-    'node_modules/(?!(jest-)?react-native|@react-native|@expo|expo-|@supabase/supabase-js)'
+    'node_modules/(?!(jest-)?react-native|@react-native|@expo|expo-|@supabase/supabase-js|@react-native-async-storage)'
   ],
   testEnvironment: 'node',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1'
-  },
-  transform: {
-    '^.+\\.(ts|tsx)$': 'babel-jest'
   }
 }

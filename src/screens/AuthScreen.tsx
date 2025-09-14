@@ -25,8 +25,8 @@ export function AuthScreen() {
   const [isLoading, setIsLoading] = useState(false)
 
   // Basic form fields
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('atemndobs@gmail.com')
+  const [password, setPassword] = useState('Atem1234')
 
   // Signup additional fields
   const [businessName, setBusinessName] = useState('')
@@ -187,7 +187,7 @@ export function AuthScreen() {
                     style={styles.input}
                     value={email}
                     onChangeText={setEmail}
-                    placeholder="Enter your email"
+                    placeholder="atemndobs@gmail.com"
                     placeholderTextColor="rgba(255, 255, 255, 0.4)"
                     keyboardType="email-address"
                     autoCapitalize="none"
@@ -200,7 +200,7 @@ export function AuthScreen() {
                     style={styles.input}
                     value={password}
                     onChangeText={setPassword}
-                    placeholder="Enter your password"
+                    placeholder="Atem1234"
                     placeholderTextColor="rgba(255, 255, 255, 0.4)"
                     secureTextEntry
                   />

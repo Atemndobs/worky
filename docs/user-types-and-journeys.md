@@ -4,6 +4,8 @@
 
 The Worky app has two distinct user types, each with specific roles and workflows within the platform. This document outlines the user types, their journeys, and a user matrix detailing their permissions and capabilities.
 
+> 2025-09-14 Security Note: Repository configuration updated to remove `.env` from git history and ignore it going forward. This change does not modify any user flows or screens.
+
 ## User Types
 
 ### 1. Handyman

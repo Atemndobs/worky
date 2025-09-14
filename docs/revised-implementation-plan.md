@@ -3,7 +3,7 @@
 **Project**: Worky Mobile App - Swiss Market Auction System
 **Timeline**: 13-17 days (3-4 days saved by eliminating Phase 4)
 **Status**: Phase 1 ✅ Complete, Phase 2 🚀 Next
-**Last Updated**: 2025-01-15
+**Last Updated**: 2025-09-14
 
 ## Executive Summary
 
@@ -78,6 +78,19 @@ Following evaluation of the existing UI implementation, **Phase 4 (UI/UX Design 
 
 #### ✅ Success Criteria
 - [x] Users can register and login with handyman/customer selection
+
+---
+
+## 🔒 Security Hardening (2025-09-14)
+
+To prevent accidental exposure of credentials via version control, we applied the following repository-wide changes:
+
+- Added `.env` and `.env.*` to `.gitignore` while keeping `.env.example` tracked
+- Removed tracked `.env` from the repository and rewrote git history to purge it from all commits
+- Added `.env.example` with placeholders for onboarding without exposing secrets
+- Action required for all developers: rotate Supabase Anon and Service Role keys; update local `.env` only (never commit)
+
+No scope or feature changes; timeline unaffected. This is a security posture update only.
 - [x] AuthContext properly manages user state and type detection
 - [x] Database queries execute successfully with proper type safety
 - [x] Swiss market localization foundation (CHF currency ready, timezone handling)

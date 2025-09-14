@@ -222,7 +222,7 @@ src/
 
 ---
 
-**Last Updated**: Implementation Phase 3 - Core Auction System COMPLETED with Full Testing
+**Last Updated**: 2025-09-14 — Security hardening completed: `.env` removed from repo history, `.gitignore` updated, `.env.example` added; secrets rotation required.
 **Next Milestone**: Phase 5 - Real-time Notifications & Advanced Features
 
 This context document ensures Claude Code maintains focus on the auction system implementation while respecting Swiss market requirements and architectural decisions.
